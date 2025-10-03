@@ -1,2 +1,15 @@
-.env
-.idea
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.log
+
+.venv/
+env/
+ENV/
+
+nui/db/*.mem
+nui/db/*.vlog
+nui/db/LOCK
+nui/db/MANIFEST
