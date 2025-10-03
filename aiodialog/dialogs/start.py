@@ -8,7 +8,7 @@ from aiogram_dialog.widgets.kbd import Button, Row
 from db.requests import set_user_language
 
 from db.requests import create_group
-from aiodialog.StatsGroup import StartSg, CreateSg
+from aiodialog.StatsGroup import StartSg, CreateSg, GroupsSg
 from functools import partial
 
 async def set_lang(callback: CallbackQuery, button: Button, manager: DialogManager, lang: str):
@@ -26,7 +26,7 @@ async def sl_button(callback: CallbackQuery, button: Button, manager: DialogMana
     pass
 
 async def groups_button(callback: CallbackQuery, button: Button, manager: DialogManager):
-    pass
+    await manager.start(GroupsSg.my_groups)
 
 
 start_dialog = Dialog(

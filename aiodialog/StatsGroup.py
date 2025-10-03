@@ -9,5 +9,5 @@ class CreateSg(StatesGroup):
     subgroups = State()
     admins = State()
 
-class MainMenu(StatesGroup):
-    pass
+class GroupsSg(StatesGroup):
+    my_groups = State()
