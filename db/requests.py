@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, selectinload
 from db.tables import User, Group, Subgroup
 from config.config import load_config
 from sqlalchemy import select
@@ -23,7 +23,6 @@ async def create_group(name: str, owned_by: int):
         group = Group(name=name, owned_by=owned_by)
         session.add(group)
         await session.commit()
-        await session.refresh(group)
         return group
 
 async def create_subgroup(name: str, group_id: int):
@@ -41,5 +40,18 @@ async def set_user_language(user_id: int, language: str):
         user.language = language
         await session.commit()
 
+async def get_user_groups(user_id: int):
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(User)
+            .options(selectinload(User.groups), selectinload(User.owned_groups))
+            .where(User.telegram_id == user_id)
+        )
+        user = result.scalar_one_or_none()
+        if not user:
+            return []
+
+        all_groups = {g.id: g for g in user.groups + user.owned_groups}
+        return list(all_groups.values())
 
 

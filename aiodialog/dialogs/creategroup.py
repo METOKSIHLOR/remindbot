@@ -36,6 +36,8 @@ async def finish_create(message: Message, widget: ManagedTextInput, manager: Dia
     for subgroup_name in manager.dialog_data["subgroup_names"]:
         await create_subgroup(name=subgroup_name, group_id=group.id)
     await message.answer(f"Поздравляю! Группа {group.name} была успешно создана!")
+    manager.dialog_data.pop("group_name", None)
+    manager.dialog_data.pop("subgroup_names", None)
     await manager.start(state=StartSg.main_menu)
 
 
@@ -51,6 +53,6 @@ create_dialog = Dialog(
            TextInput(id="Subgroups_input", type_factory=subgroups_check,
                      on_success=finish_create,
                      on_error=failed_check),
-           Button(text=Const("Назад"), id="Back_button", on_click=back_button),
+           Button(text=Const("Назад"), id="back_button", on_click=back_button),
            state=CreateSg.subgroups),
 )
