@@ -38,7 +38,7 @@ async def change_page(c, w, manager: DialogManager, delta: int):
     page = manager.dialog_data.get("page", 0)
     new_page = max(0, page + delta)
     manager.dialog_data["page"] = new_page
-    await manager.reload()
+    await manager.show()
 
 next_button = Button(Const(text="Вперед"), id="next_button", on_click=partial(change_page, delta=+1))
 prev_button = Button(Const(text="Назад"), id="prev_button", on_click=partial(change_page, delta=-1))
