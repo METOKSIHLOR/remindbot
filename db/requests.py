@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker, selectinload
 from db.tables import User, Group, Subgroup
 from config.config import load_config
 from sqlalchemy import select
-
+import asyncio
 db_config = load_config()
 
 engine = create_async_engine(url=db_config.postgres.url)
@@ -50,8 +50,14 @@ async def get_user_groups(user_id: int):
         user = result.scalar_one_or_none()
         if not user:
             return []
-
         all_groups = {g.id: g for g in user.groups + user.owned_groups}
         return list(all_groups.values())
 
-
+async def get_subgroups(group_id: int):
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(Subgroup).where(Subgroup.group_id == group_id)
+        )
+        if not result:
+            return []
+        return result.scalars().all()

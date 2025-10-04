@@ -11,3 +11,4 @@ class CreateSg(StatesGroup):
 
 class GroupsSg(StatesGroup):
     my_groups = State()
+    my_subgroups = State()
