@@ -1,7 +1,7 @@
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Select
 from aiogram_dialog.widgets.text import Format
 
-from aiodialog.dialogs.group_settings.functions import on_subgroup_selected
+from aiodialog.subgroup_settings.sg_functions import on_subgroup_selected
 
 subgroups_select = Select(
     Format("{item.name}"),

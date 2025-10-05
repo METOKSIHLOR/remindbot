@@ -25,8 +25,6 @@ async def on_group_selected(c, w, manager: DialogManager, item_id):
     group_id = int(item_id)
     await manager.start(state=GroupsSg.my_subgroups, data={"group_id": group_id})
 
-async def on_subgroup_selected(c, w, manager: DialogManager, item_id):
-    print(f"Выбрана подгруппа {item_id}")
 
 async def change_page(c, w, manager: DialogManager, delta: int):
     page = manager.dialog_data.get("page", 0)

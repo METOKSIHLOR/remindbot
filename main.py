@@ -5,13 +5,10 @@ import asyncio
 from aiogram_dialog import setup_dialogs
 from redis.asyncio import Redis
 
-from aiodialog.StatsGroup import GroupsSg
-from aiodialog.dialogs.creategroup import create_dialog
-from aiodialog.dialogs.groups import groups_dialog
+from aiodialog.dialogs.dialogs import create_dialog, start_dialog, groups_dialog, event_dialog
 from config.config import load_config, Config
 from db.requests import engine
 from db.tables import Base
-from aiodialog.dialogs.start import start_dialog
 from handlers.user import user_router
 
 
@@ -28,6 +25,7 @@ async def main():
     dp.include_router(start_dialog)
     dp.include_router(create_dialog)
     dp.include_router(groups_dialog)
+    dp.include_router(event_dialog)
     setup_dialogs(dp)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

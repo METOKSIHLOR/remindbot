@@ -12,3 +12,9 @@ class CreateSg(StatesGroup):
 class GroupsSg(StatesGroup):
     my_groups = State()
     my_subgroups = State()
+    my_events = State()
+
+class EventsSg(StatesGroup):
+    name = State()
+    time = State()
+    comment = State()
