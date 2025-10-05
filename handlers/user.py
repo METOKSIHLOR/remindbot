@@ -2,8 +2,9 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram_dialog import DialogManager, StartMode
 from aiogram.types import Message
+
+from aiodialog.StatsGroup import StartSg
 from db.requests import create_user
-from aiodialog.dialogs.start import StartSg
 
 user_router = Router()
 

@@ -53,7 +53,7 @@ class Event(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     sg_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("subgroups.sg_id"))
     name: Mapped[str] = mapped_column()
-    timestamp: Mapped[datetime] = mapped_column()
+    timestamp: Mapped[str] = mapped_column()
     comment: Mapped[str] = mapped_column()
 
     subgroup = relationship("Subgroup", back_populates="events")

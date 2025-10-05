@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, selectinload
-from db.tables import User, Group, Subgroup
+from db.tables import User, Group, Subgroup, Event
 from config.config import load_config
 from sqlalchemy import select
 import asyncio
@@ -61,3 +61,32 @@ async def get_subgroups(group_id: int):
         if not result:
             return []
         return result.scalars().all()
+
+async def add_event(sg_id: int, name: str, timestamp, comment: str):
+    async with AsyncSessionLocal() as session:
+        event = Event(sg_id=sg_id, name=name, timestamp=timestamp, comment=comment)
+        session.add(event)
+        await session.commit()
+
+from sqlalchemy.exc import SQLAlchemyError
+
+async def create_new_event(sg_id: int, name: str, timestamp: str, comment: str):
+    async with AsyncSessionLocal() as session:
+        try:
+            event = Event(sg_id=sg_id, name=name, timestamp=timestamp, comment=comment)
+            session.add(event)
+            await session.commit()
+            print(f"DEBUG: Событие создано: sg_id={sg_id}, name={name}, timestamp={timestamp}, comment={comment}")
+        except SQLAlchemyError as e:
+            await session.rollback()
+            print(f"ERROR: Не удалось создать событие: {e}")
+            raise
+
+
+async def get_events(subgroup_id: int):
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(Event).where(Event.sg_id == subgroup_id)
+        )
+        events = result.scalars().all()
+        return [{"id": e.id, "name": e.name} for e in events]
