@@ -1,11 +1,10 @@
-from aiogram_dialog import Dialog, Window, DialogManager
-from aiogram_dialog.widgets.input import TextInput, ManagedTextInput
-from aiogram_dialog.widgets.text import Const
-from aiogram_dialog.widgets.kbd import Button
-from aiogram.types import Message, CallbackQuery
-from aiodialog.StatsGroup import CreateSg, StartSg
+from aiogram_dialog import DialogManager
+from aiogram_dialog.widgets.input import ManagedTextInput
+from aiogram.types import CallbackQuery
+from aiogram.types import Message
+from aiodialog.StatsGroup import StartSg
 from db.requests import create_group, create_subgroup
-from functools import partial
+from aiogram_dialog.widgets.kbd import Button
 
 async def back_button(callback: CallbackQuery, button: Button, manager: DialogManager):
     await manager.back()
@@ -39,20 +38,3 @@ async def finish_create(message: Message, widget: ManagedTextInput, manager: Dia
     manager.dialog_data.pop("group_name", None)
     manager.dialog_data.pop("subgroup_names", None)
     await manager.start(state=StartSg.main_menu)
-
-
-create_dialog = Dialog(
-    Window(
-        Const("Придумайте название для группы"),
-        TextInput(id="Name_input", type_factory=name_check,
-                  on_success=correct_check,
-                  on_error=failed_check),
-        state=CreateSg.name
-    ),
-    Window(Const(text="Теперь введите подгруппы в формате 'Subgroup 1, Subgroup 2, Subgroup 3'"),
-           TextInput(id="Subgroups_input", type_factory=subgroups_check,
-                     on_success=finish_create,
-                     on_error=failed_check),
-           Button(text=Const("Назад"), id="back_button", on_click=back_button),
-           state=CreateSg.subgroups),
-)
