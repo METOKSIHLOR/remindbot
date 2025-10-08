@@ -143,3 +143,22 @@ async def rename_sg(sg_id: int, new_name: str):
             await session.execute(
                 update(Subgroup).where(Subgroup.sg_id == sg_id).values(name=new_name)
             )
+
+async def rename_event(event_id: int, new_name: str):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                update(Event)
+                .where(Event.id == event_id)
+                .values(name=new_name)
+            )
+        await session.commit()
+
+async def delete_event(event_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                delete(Event)
+                .where(Event.id == event_id)
+            )
+        await session.commit()

@@ -29,5 +29,8 @@ class AdminGroupSg(StatesGroup):
     rename_sg = State()
     finish_sg = State()
 
-class AdminSubSg(StatesGroup):
+class AdminEventSg(StatesGroup):
     panel = State()
+    del_event = State()
+    rename_event = State()
+    finish_event = State()

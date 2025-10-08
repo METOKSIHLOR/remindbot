@@ -4,13 +4,14 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Button, Row
-from aiodialog.StatsGroup import CreateSg, StartSg, GroupsSg, EventsSg, AdminGroupSg, AdminSubSg
+from aiodialog.StatsGroup import CreateSg, StartSg, GroupsSg, EventsSg, AdminGroupSg, AdminEventSg
+from aiodialog.admin.event_admin_func import get_event_admin_panel, admin_rename_event, admin_del_event, \
+    rename_event_success
 from aiodialog.admin.group_admin_func import get_group_admin_panel, admin_group_getter, admin_back_button, \
     start_add_subgroup, \
     create_new_subgroup, start_del_subgroup, admin_group_delete, delete_group, del_cancel, rename_group_success, \
     rename_group_button, rename_sg_button, rename_subgroup, admin_cancel_button
-from aiodialog.admin.admins import admin_sg_group, admin_rn_sg_group
-from aiodialog.admin.subgroup_admin_func import admin_sg_panel
+from aiodialog.admin.admins import admin_sg_group, admin_rn_sg_group, admin_delete_group, admin_rename_group
 from aiodialog.create_group.functions import name_check, correct_check, failed_check, subgroups_check, \
     finish_create, back_button, cancel_button
 from aiodialog.event_settings.event_functions import start_add_event, event_name_check, event_name_success, \
@@ -81,7 +82,7 @@ groups_dialog = Dialog(
         Const(text="События в данной подгруппе:"),
         events_group,
         Button(text=Const("Добавить"), id="add_event", on_click=start_add_event),
-        Button(text=Const("Admin-panel"), id="sg_admin_panel", on_click=admin_sg_panel, when="is_admin"),
+        Button(text=Const("Admin-panel"), id="sg_admin_panel", on_click=get_event_admin_panel, when="is_admin"),
         Button(text=Const("Назад"), id="back", on_click=back_button),
         Button(text=Const("Главное меню"), id="main_menu", on_click=main_menu),
         state=GroupsSg.my_events,
@@ -192,7 +193,23 @@ group_admin_dialog = Dialog(
 
 subgroups_admin_dialog = Dialog(
     Window(
-        Const(text="Типа админка"),
-        state=AdminSubSg.panel,
+        Const(text="Админ-панель"),
+        Row(Button(text=Const("Удалить событие"), id="event_delete", on_click=admin_del_event),
+            Button(text=Const("Переименовать событие"), id="event_rename", on_click=admin_rename_event),),
+        state=AdminEventSg.panel,
     ),
+    Window(Const(text="Выберите событие:"),
+           admin_delete_group,
+           state=AdminEventSg.del_event,
+           getter=event_getter,),
+    Window(Const(text="Выберите событие:"),
+           admin_rename_group,
+           state=AdminEventSg.rename_event,
+           getter=event_getter,),
+    Window(Const(text="Введите новое название события:"),
+           TextInput(id="rename_subgroup_input", type_factory=name_check,
+                     on_success=rename_event_success,
+                     on_error=failed_check,),
+           state=AdminEventSg.finish_event,
+           )
 )

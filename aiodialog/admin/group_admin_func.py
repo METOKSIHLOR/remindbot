@@ -1,7 +1,7 @@
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram.types import Message
-from aiodialog.StatsGroup import GroupsSg, AdminSubSg, AdminGroupSg
+from aiodialog.StatsGroup import GroupsSg, AdminGroupSg
 from db.requests import create_subgroup, del_sg, del_group, rename_group, rename_sg
 
 
