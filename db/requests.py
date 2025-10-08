@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, selectinload
 from db.tables import User, Group, Subgroup, Event
 from config.config import load_config
-from sqlalchemy import select
+from sqlalchemy import select, delete, update
 import asyncio
 db_config = load_config()
 
@@ -17,6 +17,13 @@ async def create_user(telegram_id: int, first_name: str, last_name: str | None =
             user = User(telegram_id=telegram_id, first_name=first_name, last_name=last_name)
             session.add(user)
             await session.commit()
+
+async def get_user(telegram_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            user = await session.execute(select(User).where(User.telegram_id == telegram_id))
+            return user.scalar_one_or_none()
+
 
 async def create_group(name: str, owned_by: int):
     async with AsyncSessionLocal() as session:
@@ -90,3 +97,49 @@ async def get_events(subgroup_id: int):
         )
         events = result.scalars().all()
         return [{"id": e.id, "name": e.name} for e in events]
+
+async def get_event_info(id: int):
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(Event).where(Event.id == id)
+        )
+        event = result.scalars().first()
+        return event
+
+async def get_group(group_id: int):
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(Group).where(Group.id == group_id)
+        )
+        group = result.scalars().first()
+        return group
+
+async def del_sg(sg_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                delete(Subgroup).where(Subgroup.sg_id == sg_id)
+            )
+        await session.commit()
+
+async def del_group(group_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                delete(Group).where(Group.id == group_id)
+            )
+        await session.commit()
+
+async def rename_group(group_id: int, new_name: str):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                update(Group).where(Group.id == group_id).values(name=new_name)
+            )
+
+async def rename_sg(sg_id: int, new_name: str):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                update(Subgroup).where(Subgroup.sg_id == sg_id).values(name=new_name)
+            )

@@ -7,7 +7,7 @@ subgroups_select = Select(
     Format("{item.name}"),
     id="subgroups_select",
     item_id_getter=lambda x: x.sg_id,
-    items="subgroups",
+    items="result",
     on_click=on_subgroup_selected,
 )
 

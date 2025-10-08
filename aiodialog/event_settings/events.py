@@ -8,7 +8,7 @@ events_select = Select(
     Format("{item[name]}"),
     id="events_select",
     item_id_getter=lambda x: x["id"],
-    items="events",
+    items="result",
     on_click=on_event_selected,
 )
 

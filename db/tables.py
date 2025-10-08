@@ -34,7 +34,7 @@ class Group(Base):
     owned_by: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.telegram_id"))
 
     members = relationship("User", secondary=user_group_association, back_populates="groups")
-    subgroups = relationship("Subgroup", back_populates="group")
+    subgroups = relationship("Subgroup", back_populates="group", cascade="all, delete-orphan", passive_deletes=True)
     user = relationship("User", back_populates="owned_groups", foreign_keys=[owned_by])
 
 class Subgroup(Base):
@@ -42,16 +42,16 @@ class Subgroup(Base):
 
     sg_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column()
-    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"))
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id", ondelete="CASCADE"))
 
     group = relationship("Group", back_populates="subgroups")
-    events = relationship("Event", back_populates="subgroup")
+    events = relationship("Event", back_populates="subgroup", cascade="all, delete-orphan", passive_deletes=True)
 
 class Event(Base):
     __tablename__ = "events"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    sg_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("subgroups.sg_id"))
+    sg_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("subgroups.sg_id", ondelete="CASCADE"))
     name: Mapped[str] = mapped_column()
     timestamp: Mapped[str] = mapped_column()
     comment: Mapped[str] = mapped_column()
