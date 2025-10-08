@@ -13,8 +13,21 @@ class GroupsSg(StatesGroup):
     my_groups = State()
     my_subgroups = State()
     my_events = State()
+    select_event = State()
 
 class EventsSg(StatesGroup):
     name = State()
     time = State()
     comment = State()
+
+class AdminGroupSg(StatesGroup):
+    panel = State()
+    add_sg = State()
+    del_sg = State()
+    del_group = State()
+    rename_group = State()
+    rename_sg = State()
+    finish_sg = State()
+
+class AdminSubSg(StatesGroup):
+    panel = State()

@@ -9,6 +9,9 @@ from aiogram_dialog.widgets.kbd import Button
 async def back_button(callback: CallbackQuery, button: Button, manager: DialogManager):
     await manager.back()
 
+async def cancel_button(callback: CallbackQuery, button: Button, manager: DialogManager):
+    await manager.start(StartSg.main_menu)
+
 def name_check(text: str):
     if not len(text):
         raise ValueError("Название должно содержать хотя бы один символ")
@@ -38,3 +41,4 @@ async def finish_create(message: Message, widget: ManagedTextInput, manager: Dia
     manager.dialog_data.pop("group_name", None)
     manager.dialog_data.pop("subgroup_names", None)
     await manager.start(state=StartSg.main_menu)
+

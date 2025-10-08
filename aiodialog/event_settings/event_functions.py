@@ -2,8 +2,8 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram.types import Message
 
-from aiodialog.StatsGroup import EventsSg, GroupsSg
-from db.requests import create_new_event, get_events
+from aiodialog.StatsGroup import EventsSg, GroupsSg, StartSg
+from db.requests import create_new_event, get_events, get_event_info
 from db.tables import Event
 
 
@@ -67,11 +67,20 @@ async def event_getter(dialog_manager: DialogManager, **kwargs):
     if not sg_id:
         return {"events": []}
     events = await get_events(sg_id)
-    return {"events": events}
+    is_admin = data.get("is_admin")
+    return {"result": events, "is_admin": is_admin}
 
-
+async def event_info_getter(dialog_manager: DialogManager, **kwargs):
+    state = dialog_manager.middleware_data["state"]
+    data = await state.get_data()
+    event_now = data.get("event_now")
+    print("DEBUG event__info_getter event_now:", event_now)
+    event = await get_event_info(event_now)
+    return {"result": event}
 
 
 async def on_event_selected(c, w, manager: DialogManager, item_id):
-    manager.dialog_data["event_now"] = int(item_id)
-    await manager.start(GroupsSg.my_events)
+    event_now = int(item_id)
+    state = manager.middleware_data["state"]
+    await state.update_data(event_now=event_now)
+    await manager.start(GroupsSg.select_event)
