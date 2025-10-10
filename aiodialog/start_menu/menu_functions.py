@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 
-from aiodialog.StatsGroup import CreateSg, GroupsSg
+from aiodialog.StatsGroup import CreateSg, GroupsSg, JoinSg
 from db.requests import set_user_language
 from aiogram_dialog.widgets.kbd import Button
 
@@ -14,7 +14,8 @@ async def cr_button(callback: CallbackQuery, button: Button, manager: DialogMana
     await manager.start(CreateSg.name)
 
 async def jn_button(callback: CallbackQuery, button: Button, manager: DialogManager):
-    pass
+    await manager.start(JoinSg.id)
+
 
 async def sl_button(callback: CallbackQuery, button: Button, manager: DialogManager):
     pass
