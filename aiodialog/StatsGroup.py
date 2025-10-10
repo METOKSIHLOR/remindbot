@@ -34,3 +34,15 @@ class AdminEventSg(StatesGroup):
     del_event = State()
     rename_event = State()
     finish_event = State()
+
+class EditEventSg(StatesGroup):
+    panel = State()
+    start_time = State()
+    time = State()
+    start_comment = State()
+    comment = State()
+
+class JoinSg(StatesGroup):
+    id = State()
+    main = State()
+    choice = State()

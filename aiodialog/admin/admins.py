@@ -1,9 +1,8 @@
-from aiogram.types import CallbackQuery
-from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button, Select, ScrollingGroup
 from aiogram_dialog.widgets.text import Const, Format
 
-from aiodialog.admin.event_admin_func import admin_rename_event_selected, admin_delete_event_selected
+from aiodialog.admin.event_admin_func import admin_rename_event_selected, admin_delete_event_selected, \
+    admin_edit_selected
 from aiodialog.admin.group_admin_func import admin_subgroup_selected, admin_rn_sg_selected
 
 admin_sg_select = Select(
@@ -62,6 +61,36 @@ admin_rename_select = Select(
 admin_rename_group = ScrollingGroup(
     admin_rename_select,
     id="admin_rename_group",
+    width=1,
+    height=5
+)
+
+admin_time_select = Select(
+    Format("{item[name]}"),
+    id="rename_select",
+    item_id_getter=lambda g: g["id"],
+    items="result",
+    on_click=admin_edit_selected,
+)
+
+admin_time_group = ScrollingGroup(
+    admin_time_select,
+    id="admin_rename_group",
+    width=1,
+    height=5
+)
+
+admin_comm_select = Select(
+    Format("{item[name]}"),
+    id="comment_select",
+    item_id_getter=lambda g: g["id"],
+    items="result",
+    on_click=admin_edit_selected,
+)
+
+admin_comm_group = ScrollingGroup(
+    admin_comm_select,
+    id="admin_comm_group",
     width=1,
     height=5
 )

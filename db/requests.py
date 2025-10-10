@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, selectinload
-from db.tables import User, Group, Subgroup, Event
+from db.tables import User, Group, Subgroup, Event, JoinRequest
 from config.config import load_config
 from sqlalchemy import select, delete, update
 import asyncio
@@ -162,3 +162,72 @@ async def delete_event(event_id: int):
                 .where(Event.id == event_id)
             )
         await session.commit()
+
+async def edit_time_event(event_id: int, new_time: str):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                update(Event)
+                .where(Event.id == int(event_id)).values(timestamp=new_time)
+            )
+
+async def edit_comment_event(event_id: int, new_comment: str):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                update(Event)
+                .where(Event.id == int(event_id)).values(comment=new_comment)
+            )
+
+
+async def create_join_request(user_id: int, group_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            join_request = JoinRequest(user_id=int(user_id), group_id=int(group_id))
+            session.add(join_request)
+        await session.commit()
+
+async def add_user_group(group_id: int, user_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            user = await session.get(User, user_id)
+            group = await session.get(Group, group_id)
+            group.members.append(user)
+        await session.commit()
+
+async def get_joins(group_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            result = await session.execute(
+                select(JoinRequest).options(selectinload(JoinRequest.user)).where(JoinRequest.group_id == group_id)
+            )
+        return result.scalars().all()
+
+async def get_one_join(id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            result = await session.execute(
+                select(JoinRequest).options(selectinload(JoinRequest.user)).where(JoinRequest.id == id)
+            )
+        return result.scalars().first()
+
+async def delete_join(id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            await session.execute(
+                delete(JoinRequest).where(JoinRequest.id == id)
+            )
+
+async def exist_join(user_id: int, group_id: int):
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            existing = await session.execute(
+                select(JoinRequest)
+                .where(JoinRequest.user_id == user_id)
+                .where(JoinRequest.group_id == group_id)
+            )
+            existing_request = existing.scalars().first()
+
+            if existing_request:
+                return True
+            return False

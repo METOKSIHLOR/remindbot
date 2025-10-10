@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, JSON, ForeignKey, Column
+from sqlalchemy import BigInteger, JSON, ForeignKey, Column, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import Table
 
@@ -25,6 +25,8 @@ class User(Base):
 
     groups = relationship("Group", secondary=user_group_association, back_populates="members")
     owned_groups = relationship("Group", back_populates="user", foreign_keys="[Group.owned_by]")
+    join_requests = relationship("JoinRequest", back_populates="user")
+
 
 class Group(Base):
     __tablename__ = "groups"
@@ -36,6 +38,7 @@ class Group(Base):
     members = relationship("User", secondary=user_group_association, back_populates="groups")
     subgroups = relationship("Subgroup", back_populates="group", cascade="all, delete-orphan", passive_deletes=True)
     user = relationship("User", back_populates="owned_groups", foreign_keys=[owned_by])
+    join_requests = relationship("JoinRequest", back_populates="group")
 
 class Subgroup(Base):
     __tablename__ = "subgroups"
@@ -58,5 +61,14 @@ class Event(Base):
 
     subgroup = relationship("Subgroup", back_populates="events")
 
+class JoinRequest(Base):
+    __tablename__ = "join_requests"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.telegram_id"))
+    group_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("groups.id"))
+
+    user = relationship("User", back_populates="join_requests")
+    group = relationship("Group", back_populates="join_requests")
 
 

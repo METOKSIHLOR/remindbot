@@ -10,6 +10,7 @@ async def back_button(callback: CallbackQuery, button: Button, manager: DialogMa
     await manager.back()
 
 async def cancel_button(callback: CallbackQuery, button: Button, manager: DialogManager):
+    await manager.reset_stack()
     await manager.start(StartSg.main_menu)
 
 def name_check(text: str):
