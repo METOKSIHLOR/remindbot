@@ -17,8 +17,8 @@ from aiodialog.admin.admins import admin_sg_group, admin_rn_sg_group, admin_dele
 from aiodialog.create_group.functions import name_check, correct_check, failed_check, subgroups_check, \
     finish_create, back_button, cancel_button
 from aiodialog.event_settings.event_functions import start_add_event, event_name_check, event_name_success, \
-    event_name_fail, event_time_check, event_time_success, event_time_fail, event_comment_success, comment_check, \
-    event_comment_fail, event_getter, event_info_getter
+    event_name_fail, event_time_success, event_time_fail, event_comment_success, comment_check, \
+    event_comment_fail, event_getter, event_info_getter, time_type_factory
 from aiodialog.event_settings.events import events_group
 from aiodialog.group_settings.group_functions import groups_getter
 from aiodialog.group_settings.groups import main_menu, groups_group
@@ -111,10 +111,10 @@ event_dialog = Dialog(
         state=EventsSg.name
     ),
     Window(
-        Const(text="Теперь введите время его проведения в формате пока не придумал:"),
-        TextInput(id="event_time_input", type_factory=event_time_check,
+        Const(text="Теперь введите время его проведения в формате 'ДД.ММ.ГГГГ ЧЧ:ММ':"),
+        TextInput(id="event_time_input", type_factory=time_type_factory,
                   on_success=event_time_success,
-                  on_error=event_time_fail,),
+                  on_error=failed_check,),
         Button(text=Const("Назад"), id="back", on_click=back_button),
         Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
         state=EventsSg.time),
@@ -247,9 +247,9 @@ edit_event_dialog = Dialog(
         getter=event_getter,
     ),
     Window(Const(text="Введите новое время:"),
-           TextInput(id="event_time_edit", type_factory=event_time_check,
+           TextInput(id="event_time_edit", type_factory=time_type_factory,
                      on_success=edit_time_success,
-                     on_error=event_time_fail, ),
+                     on_error=failed_check, ),
            Button(text=Const("Назад"), id="back", on_click=back_button),
            Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
            state=EditEventSg.time,

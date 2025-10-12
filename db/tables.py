@@ -11,8 +11,8 @@ class Base(DeclarativeBase):
 user_group_association = Table(
     "user_group_association",
     Base.metadata,
-    Column("user_id", BigInteger, ForeignKey("users.telegram_id"), primary_key=True),
-    Column("group_id", BigInteger, ForeignKey("groups.id"), primary_key=True)
+    Column("user_id", BigInteger, ForeignKey("users.telegram_id", ondelete="CASCADE"), primary_key=True),
+    Column("group_id", BigInteger, ForeignKey("groups.id", ondelete="CASCADE"), primary_key=True)
 )
 
 class User(Base):
@@ -35,10 +35,26 @@ class Group(Base):
     name: Mapped[str] = mapped_column()
     owned_by: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.telegram_id"))
 
-    members = relationship("User", secondary=user_group_association, back_populates="groups")
-    subgroups = relationship("Subgroup", back_populates="group", cascade="all, delete-orphan", passive_deletes=True)
+    members = relationship(
+        "User",
+        secondary=user_group_association,
+        back_populates="groups",
+        passive_deletes=True  # учитывает CASCADE в user_group_association
+    )
+    subgroups = relationship(
+        "Subgroup",
+        back_populates="group",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+    join_requests = relationship(
+        "JoinRequest",
+        back_populates="group",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
     user = relationship("User", back_populates="owned_groups", foreign_keys=[owned_by])
-    join_requests = relationship("JoinRequest", back_populates="group")
 
 class Subgroup(Base):
     __tablename__ = "subgroups"
@@ -56,7 +72,7 @@ class Event(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     sg_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("subgroups.sg_id", ondelete="CASCADE"))
     name: Mapped[str] = mapped_column()
-    timestamp: Mapped[str] = mapped_column()
+    timestamp: Mapped[datetime] = mapped_column()
     comment: Mapped[str] = mapped_column()
 
     subgroup = relationship("Subgroup", back_populates="events")
@@ -65,8 +81,8 @@ class JoinRequest(Base):
     __tablename__ = "join_requests"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.telegram_id"))
-    group_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("groups.id"))
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.telegram_id", ondelete="CASCADE"))
+    group_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("groups.id", ondelete="CASCADE"))
 
     user = relationship("User", back_populates="join_requests")
     group = relationship("Group", back_populates="join_requests")
