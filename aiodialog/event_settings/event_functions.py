@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram.types import Message
@@ -5,6 +7,7 @@ from aiogram.types import Message
 from aiodialog.StatsGroup import EventsSg, GroupsSg, StartSg
 from db.requests import create_new_event, get_events, get_event_info
 from db.tables import Event
+
 
 
 def event_name_check(text: str):
@@ -19,11 +22,23 @@ async def event_name_success(message: Message, widget: ManagedTextInput, manager
 async def event_name_fail(message: Message, widget: ManagedTextInput, manager: DialogManager, error: ValueError):
     await message.answer(f"{error}")
 
-def event_time_check(text: str):
-    return text
+def parse_event_time(text: str):
+    try:
+        dt = datetime.strptime(text.strip(), "%d.%m.%Y %H:%M")
+        if dt < datetime.now():
+            return None
+        return dt
+    except ValueError:
+        return None
 
-async def event_time_success(message: Message, widget: ManagedTextInput, manager: DialogManager, result: str):
-    manager.dialog_data["event_time"] = result
+def time_type_factory(text: str) -> datetime:
+    dt = parse_event_time(text)
+    if not dt:
+        raise ValueError("Неверный формат времени.")
+    return dt
+
+async def event_time_success(message: Message, widget: ManagedTextInput, manager: DialogManager, result: datetime):
+    manager.dialog_data["event_time"] = result.strftime("%d.%m.%Y %H:%M")
     await manager.next()
 
 async def event_time_fail(message: Message, widget: ManagedTextInput, manager: DialogManager, error: ValueError):
@@ -48,10 +63,11 @@ async def event_comment_success(message: Message, widget: ManagedTextInput,
         return
 
     name = manager.dialog_data["event_name"]
-    timestamp = manager.dialog_data["event_time"]
+    timestamp_str = manager.dialog_data.get("event_time")
+    timestamp = datetime.strptime(timestamp_str, "%d.%m.%Y %H:%M")
     comment = result
 
-    await create_new_event(sg_id=sg_id, name=name, timestamp=timestamp, comment=comment)
+    event = await create_new_event(sg_id=sg_id, name=name, timestamp=timestamp, comment=comment)
     await manager.start(GroupsSg.my_events)
 
 

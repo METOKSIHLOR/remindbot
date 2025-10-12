@@ -4,7 +4,7 @@ from aiogram_dialog.widgets.text import Const, Format
 from aiodialog.join_group.join_functions import on_join_selected
 
 user_joins_select = Select(
-    Format("{item['user_id']} - {item['name']}"),
+    Format("{item[user_id]} - {item[name]}"),
     id="join_select",
     item_id_getter=lambda g: g["id"],
     items="result",
