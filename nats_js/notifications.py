@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from nats.aio.client import Client as NATS
 from nats.js.api import KeyValueConfig
+from nats.js.kv import KeyValue
+
 
 async def get_js_connection():
     nc = NATS()
@@ -61,3 +63,22 @@ async def set_user_group_notify(js, user_id: int, group_id: int, enabled: bool):
 
     current[f"group_{group_id}"] = enabled
     await kv.put(key, json.dumps(current).encode("utf-8"))
+
+async def schedule_solo_notify(js, user_id: int, reminder_id: int, text: str, notify_time: datetime):
+    key = f"solo_{user_id}_{reminder_id}"
+    payload = {
+        "user_id": user_id,
+        "text": text,
+        "notify_time": notify_time.isoformat(),
+        "reminder_id": reminder_id
+    }
+    await js.put(key, json.dumps(payload).encode())
+    await js.publish("events.personal", json.dumps(payload).encode())
+
+async def cancel_solo_notify(js, user_id: int, reminder_id: int):
+    key = f"solo_{user_id}_{reminder_id}"
+    await js.delete(key)
+    await js.publish("events.personal.cancel", json.dumps({
+        "user_id": user_id,
+        "reminder_id": reminder_id
+    }).encode())

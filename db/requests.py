@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, selectinload
-from db.tables import User, Group, Subgroup, Event, JoinRequest, user_group_association
+from db.tables import User, Group, Subgroup, Event, JoinRequest, user_group_association, SoloReminder
 from config.config import load_config
 from sqlalchemy import select, delete, update, exists, and_
 import asyncio
@@ -373,4 +373,24 @@ async def remove_user_from_group(user_id: int, group_id: int):
             )
         )
         print(user_id, group_id)
+        await session.commit()
+
+async def add_solo_reminder(user_id: int, name: str, notify_time: datetime) -> int:
+    async with AsyncSessionLocal() as session:
+        reminder = SoloReminder(user_id=user_id, name=name, notify_time=notify_time)
+        session.add(reminder)
+        await session.commit()
+        await session.refresh(reminder)
+        return reminder.id
+
+async def get_solo_reminders(user_id: int):
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(SoloReminder).where(SoloReminder.user_id == user_id)
+        )
+        return result.scalars().all()
+
+async def remove_solo_reminder(reminder_id: int):
+    async with AsyncSessionLocal() as session:
+        await session.execute(delete(SoloReminder).where(SoloReminder.id == reminder_id))
         await session.commit()

@@ -49,3 +49,9 @@ class JoinSg(StatesGroup):
     id = State()
     main = State()
     choice = State()
+
+class SoloSg(StatesGroup):
+    main = State()
+    add_name = State()
+    add_time = State()
+    del_notify = State()
