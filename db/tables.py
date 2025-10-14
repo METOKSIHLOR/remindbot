@@ -87,4 +87,12 @@ class JoinRequest(Base):
     user = relationship("User", back_populates="join_requests")
     group = relationship("Group", back_populates="join_requests")
 
+class SoloReminder(Base):
+    __tablename__ = "personal_reminders"
 
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.telegram_id", ondelete="CASCADE"))
+    name: Mapped[str] = mapped_column()
+    notify_time: Mapped[datetime] = mapped_column()
+
+    user = relationship("User", backref="personal_reminders")

@@ -6,7 +6,7 @@ from nats.aio.client import Client as NATS
 from nats.errors import MsgAlreadyAckdError
 from nats.js.errors import KeyNotFoundError, KeyDeletedError
 
-from db.requests import get_event_info, get_group_users, get_group
+from db.requests import get_event_info, get_group_users, get_group, remove_solo_reminder
 from config.config import load_config
 
 async def process_schedule(msg, bot, js):
@@ -61,6 +61,41 @@ async def process_schedule(msg, bot, js):
         except MsgAlreadyAckdError:
             pass
 
+async def process_solo_notify(msg, bot, js):
+    try:
+        data = json.loads(msg.data.decode())
+        user_id = data["user_id"]
+        text = data["text"]
+        notify_time = datetime.fromisoformat(data["notify_time"])
+        reminder_id = data["reminder_id"]
+
+        if notify_time.tzinfo is None:
+            notify_time = notify_time.replace(tzinfo=timezone.utc)
+
+        delay = (notify_time - datetime.now(timezone.utc)).total_seconds()
+        if delay <= 0:
+            print(f"⏩ Пропущено сольное уведомление {reminder_id}")
+            return
+
+        await asyncio.sleep(delay)
+
+        kv = await js.key_value("notifications")
+        key = f"solo_{user_id}_{reminder_id}"
+        try:
+            entry = await kv.get(key)
+        except (KeyNotFoundError, KeyDeletedError):
+            print(f"❌ Одиночные напоминание {reminder_id} отменено")
+            return
+
+        await bot.send_message(user_id, f"🔔 Напоминание: {text}")
+        await kv.delete(key)
+        await remove_solo_reminder(reminder_id)
+
+    finally:
+        try:
+            await msg.ack()
+        except MsgAlreadyAckdError:
+            pass
 
 async def main():
     config = load_config()
@@ -73,12 +108,23 @@ async def main():
     async def schedule_cb(msg):
         asyncio.create_task(process_schedule(msg, bot, js))
 
-    sub = await js.subscribe(
+    await js.subscribe(
         "events.schedule",
         durable="notify_worker",
         deliver_policy="all",
         cb=schedule_cb
     )
+
+    async def solo_cb(msg):
+        asyncio.create_task(process_solo_notify(msg, bot, js))
+
+    await js.subscribe(
+        "events.personal",
+        durable="solo_worker",
+        deliver_policy="all",
+        cb=solo_cb
+    )
+
     print("✅ Notification worker запущен")
 
     while True:

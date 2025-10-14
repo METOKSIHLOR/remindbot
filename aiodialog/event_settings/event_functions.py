@@ -35,7 +35,7 @@ def parse_event_time(text: str):
 def time_type_factory(text: str) -> datetime:
     dt = parse_event_time(text)
     if not dt:
-        raise ValueError("Неверный формат времени.")
+        raise ValueError("❌ Неверный формат времени.")
     return dt
 
 async def event_time_success(message: Message, widget: ManagedTextInput, manager: DialogManager, result: datetime):

@@ -5,7 +5,8 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Button, Row
-from aiodialog.StatsGroup import CreateSg, StartSg, GroupsSg, EventsSg, AdminGroupSg, AdminEventSg, EditEventSg, JoinSg
+from aiodialog.StatsGroup import CreateSg, StartSg, GroupsSg, EventsSg, AdminGroupSg, AdminEventSg, EditEventSg, JoinSg, \
+    SoloSg
 from aiodialog.admin.event_admin_func import get_event_admin_panel, admin_rename_event, admin_del_event, \
     rename_event_success, admin_edit_event, edit_time_success, edit_comment_success, admin_edit_comm, admin_start_time, \
     admin_join_button, admin_event_cancel_button, edit_event_cancel, select_time_success
@@ -30,6 +31,8 @@ from aiodialog.join_group.joins import user_joins_group
 from aiodialog.start_menu.menu_functions import set_lang, groups_button, cr_button, jn_button, sl_button
 from aiodialog.subgroup_settings.sg_functions import subgroups_getter
 from aiodialog.subgroup_settings.subgroups import subgroups_group
+from solo_reminders.reminders import user_reminds_select, user_notify_delete_group
+from solo_reminders.reminders_functions import add_notify_button, solo_name_success, create_solo_notify, notify_getter, del_solo_button
 
 start_dialog = Dialog(
     Window(
@@ -321,4 +324,35 @@ join_dialog = Dialog(
         Button(text=Const("Отменить"), id="admin_cancel", on_click=admin_cancel_button),
         state=JoinSg.choice,
     )
+)
+
+solo_dialog = Dialog(
+    Window(
+        Const(text="Одиночные напоминания"),
+        Row(
+            Button(text=Const("Добавить напоминание"), id="add_notify", on_click=add_notify_button),
+            Button(text=Const("Удалить напоминание"), id="del_notify", on_click=del_solo_button),
+        ),
+        Button(text=Const("Отменить"), id="cancel_button", on_click=main_menu),
+        state=SoloSg.main,
+    ),
+    Window(
+        Const(text="Введите название события:"),
+        TextInput(type_factory=name_check, id="solo_name_input", on_success=solo_name_success, on_error=failed_check),
+        Button(text=Const("Отменить"), id="cancel_button", on_click=main_menu),
+        state=SoloSg.add_name,
+    ),
+    Window(Const(text="Введите время напоминания в формате 'ДД.ММ.ГГГГ ЧЧ:ММ' в UTC+2"),
+           TextInput(id="solo_time_input", type_factory=time_type_factory,
+                  on_success=create_solo_notify,
+                  on_error=failed_check,),
+           Button(text=Const("Назад"), id="back", on_click=back_button),
+           Button(text=Const("Отменить"), id="cancel_button", on_click=main_menu),
+           state=SoloSg.add_time),
+    Window(Const(text="Ваши актуальные события:"),
+        user_notify_delete_group,
+        Button(text=Const("Отменить"), id="cancel_button", on_click=main_menu),
+        state=SoloSg.del_notify,
+        getter=notify_getter
+    ),
 )
