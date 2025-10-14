@@ -18,6 +18,7 @@ class GroupsSg(StatesGroup):
 class EventsSg(StatesGroup):
     name = State()
     time = State()
+    notify_time = State()
     comment = State()
 
 class AdminGroupSg(StatesGroup):
@@ -28,6 +29,7 @@ class AdminGroupSg(StatesGroup):
     rename_group = State()
     rename_sg = State()
     finish_sg = State()
+    del_user = State()
 
 class AdminEventSg(StatesGroup):
     panel = State()
@@ -39,6 +41,7 @@ class EditEventSg(StatesGroup):
     panel = State()
     start_time = State()
     time = State()
+    notify_event = State()
     start_comment = State()
     comment = State()
 
