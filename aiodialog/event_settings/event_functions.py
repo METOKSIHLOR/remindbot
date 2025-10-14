@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
-from aiogram_dialog import DialogManager
+from aiogram_dialog import DialogManager, manager
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram.types import Message
 
@@ -25,7 +25,8 @@ async def event_name_fail(message: Message, widget: ManagedTextInput, manager: D
 def parse_event_time(text: str):
     try:
         dt = datetime.strptime(text.strip(), "%d.%m.%Y %H:%M")
-        if dt < datetime.now():
+        dt = dt.replace(tzinfo=timezone(timedelta(hours=2)))
+        if dt < datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=2))):
             return None
         return dt
     except ValueError:
@@ -38,11 +39,11 @@ def time_type_factory(text: str) -> datetime:
     return dt
 
 async def event_time_success(message: Message, widget: ManagedTextInput, manager: DialogManager, result: datetime):
-    manager.dialog_data["event_time"] = result.strftime("%d.%m.%Y %H:%M")
+    state = manager.middleware_data["state"]
+    tz_utc_plus_2 = timezone(timedelta(hours=2))
+    result = result.replace(tzinfo=tz_utc_plus_2)
+    await state.update_data(event_time=result.isoformat())
     await manager.next()
-
-async def event_time_fail(message: Message, widget: ManagedTextInput, manager: DialogManager, error: ValueError):
-    pass
 
 def comment_check(text: str):
     if len(text) > 2000:
@@ -57,17 +58,20 @@ async def event_comment_success(message: Message, widget: ManagedTextInput,
     state = manager.middleware_data["state"]
     data = await state.get_data()
     sg_id = data.get("sg_now")
-
+    notify = data.get("notify_time")
     if not sg_id:
         await message.answer("Ошибка: не удалось определить подгруппу!")
         return
 
     name = manager.dialog_data["event_name"]
-    timestamp_str = manager.dialog_data.get("event_time")
-    timestamp = datetime.strptime(timestamp_str, "%d.%m.%Y %H:%M")
+    timestamp_str = data.get("event_time")
+    if isinstance(timestamp_str, datetime):
+        timestamp = timestamp_str
+    else:
+        timestamp = datetime.fromisoformat(timestamp_str)
     comment = result
 
-    event = await create_new_event(sg_id=sg_id, name=name, timestamp=timestamp, comment=comment)
+    event = await create_new_event(sg_id=sg_id, name=name, timestamp=timestamp, comment=comment, notify=notify)
     await manager.start(GroupsSg.my_events)
 
 
@@ -100,3 +104,39 @@ async def on_event_selected(c, w, manager: DialogManager, item_id):
     state = manager.middleware_data["state"]
     await state.update_data(event_now=event_now)
     await manager.start(GroupsSg.select_event)
+
+def notify_check(text: str):
+    if not text.isdigit():
+        raise ValueError("Похоже, вы ввели что-то кроме количества часов.")
+    return int(text)
+
+def parse_event_time_mixed(date_str: str) -> datetime:
+    try:
+        return datetime.fromisoformat(date_str)
+    except ValueError:
+        return datetime.strptime(date_str, "%d.%m.%Y %H:%M")
+
+async def notify_success(c, w, manager: DialogManager, result: int):
+    state = manager.middleware_data["state"]
+    data = await state.get_data()
+
+    event_time = parse_event_time_mixed(data["event_time"])
+    tz_utc_plus_2 = timezone(timedelta(hours=2))
+    if event_time.tzinfo is None:
+        event_time = event_time.replace(tzinfo=tz_utc_plus_2)
+
+    now_utc = datetime.now(timezone.utc)
+    event_time_utc = event_time.astimezone(timezone.utc)
+    notify_time_utc = event_time_utc - timedelta(hours=result)
+
+    if notify_time_utc <= now_utc:
+        hours_until_event = (event_time_utc - now_utc).total_seconds() / 3600
+        await c.answer(
+            f"❌ Напоминание не может быть установлено в прошлое.\n"
+            f"До события осталось примерно {hours_until_event:.1f} ч.\n"
+            f"Введите меньшее количество часов."
+        )
+        return
+    else:
+        await state.update_data(notify_time=result)
+        await manager.next()

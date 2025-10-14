@@ -1,3 +1,5 @@
+from datetime import timezone, timedelta, datetime
+
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
 
@@ -11,8 +13,12 @@ async def admin_del_event(c, w, manager: DialogManager):
 async def admin_rename_event(c, w, manager: DialogManager):
     await manager.start(AdminEventSg.rename_event)
 
-async def admin_cancel_button(c, w, manager: DialogManager):
+async def admin_event_cancel_button(c, w, manager: DialogManager):
     await manager.start(GroupsSg.my_events)
+
+async def edit_event_cancel(c, w, manager: DialogManager):
+    await manager.reset_stack()
+    await manager.start(EditEventSg.panel)
 
 async def admin_join_button(c, w, manager: DialogManager):
     await manager.start(JoinSg.main)
@@ -54,13 +60,35 @@ async def admin_edit_selected(c, w, manager: DialogManager, item_id):
     await manager.next()
 
 
-async def edit_time_success(c, w, manager: DialogManager, result: str):
+async def select_time_success(c, w, manager: DialogManager, result: datetime):
+    state = manager.middleware_data["state"]
+    await state.update_data(event_time=result.isoformat())
+    await manager.next()
+
+async def edit_time_success(c, w, manager: DialogManager, result: int):
     state = manager.middleware_data["state"]
     data = await state.get_data()
     event_id = data.get("admin_edit")
-    await edit_time_event(event_id=event_id, new_time=result)
-    await c.answer("Время было успешно изменено")
-    await manager.start(GroupsSg.my_events)
+
+    event_time = datetime.fromisoformat(data.get("event_time"))
+    tz_utc_plus_2 = timezone(timedelta(hours=2))
+    event_time = event_time.replace(tzinfo=tz_utc_plus_2)
+
+    now_utc = datetime.now(timezone.utc)
+    event_time_utc = event_time.astimezone(timezone.utc)
+    notify_time_utc = event_time_utc - timedelta(hours=result)
+
+    if notify_time_utc <= now_utc:
+        hours_until_event = (event_time_utc - now_utc).total_seconds() / 3600
+        await c.answer(
+            f"❌ Напоминание не может быть установлено в прошлое.\n"
+            f"До события осталось примерно {hours_until_event:.1f} ч.\n"
+            f"Введите меньшее количество часов.")
+    else:
+        await edit_time_event(event_id=event_id, new_time=event_time, notify=result)
+        await c.answer("✅ Время и напоминание успешно обновлены!")
+        await manager.reset_stack()
+        await manager.start(GroupsSg.my_events)
 
 
 async def admin_edit_comm(c, w, manager: DialogManager):

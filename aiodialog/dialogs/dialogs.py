@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from functools import partial
 
 from aiogram_dialog import Dialog, Window
@@ -7,18 +8,19 @@ from aiogram_dialog.widgets.kbd import Button, Row
 from aiodialog.StatsGroup import CreateSg, StartSg, GroupsSg, EventsSg, AdminGroupSg, AdminEventSg, EditEventSg, JoinSg
 from aiodialog.admin.event_admin_func import get_event_admin_panel, admin_rename_event, admin_del_event, \
     rename_event_success, admin_edit_event, edit_time_success, edit_comment_success, admin_edit_comm, admin_start_time, \
-    admin_join_button
+    admin_join_button, admin_event_cancel_button, edit_event_cancel, select_time_success
 from aiodialog.admin.group_admin_func import get_group_admin_panel, admin_group_getter, admin_back_button, \
     start_add_subgroup, \
     create_new_subgroup, start_del_subgroup, admin_group_delete, delete_group, del_cancel, rename_group_success, \
-    rename_group_button, rename_sg_button, rename_subgroup, admin_cancel_button
+    rename_group_button, rename_sg_button, rename_subgroup, admin_cancel_button, g_admin_back_button, \
+    admin_users_getter, admin_del_user
 from aiodialog.admin.admins import admin_sg_group, admin_rn_sg_group, admin_delete_group, admin_rename_group, \
-    admin_time_group, admin_comm_group
+    admin_time_group, admin_comm_group, user_delete_group
 from aiodialog.create_group.functions import name_check, correct_check, failed_check, subgroups_check, \
     finish_create, back_button, cancel_button
 from aiodialog.event_settings.event_functions import start_add_event, event_name_check, event_name_success, \
-    event_name_fail, event_time_success, event_time_fail, event_comment_success, comment_check, \
-    event_comment_fail, event_getter, event_info_getter, time_type_factory
+    event_name_fail, event_time_success, event_comment_success, comment_check, \
+    event_comment_fail, event_getter, event_info_getter, time_type_factory, notify_check, notify_success
 from aiodialog.event_settings.events import events_group
 from aiodialog.group_settings.group_functions import groups_getter
 from aiodialog.group_settings.groups import main_menu, groups_group
@@ -111,13 +113,20 @@ event_dialog = Dialog(
         state=EventsSg.name
     ),
     Window(
-        Const(text="Теперь введите время его проведения в формате 'ДД.ММ.ГГГГ ЧЧ:ММ':"),
+        Const(text=f"Теперь введите время его проведения в формате 'ДД.ММ.ГГГГ ЧЧ:ММ' в UTC+2 ({datetime.now().time().replace(microsecond=0)}) :"),
         TextInput(id="event_time_input", type_factory=time_type_factory,
                   on_success=event_time_success,
                   on_error=failed_check,),
         Button(text=Const("Назад"), id="back", on_click=back_button),
         Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
         state=EventsSg.time),
+    Window(
+        Const(text="Введите за сколько часов до события о нем напомнить:"),
+        TextInput(id="event_notify_input", type_factory=notify_check, on_success=notify_success, on_error=failed_check),
+        Button(text=Const("Назад"), id="back", on_click=back_button),
+        Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
+        state=EventsSg.notify_time,
+    ),
     Window(
         Const(text="Теперь введите комментарий к этому событию:"),
         TextInput(id="event_comment_input", type_factory=comment_check,
@@ -140,14 +149,22 @@ group_admin_dialog = Dialog(
             Button(text=Const("Переименовать группу"), id="rename_group", on_click=rename_group_button),
             Button(text=Const("Переименовать подгруппу"), id="rename_subgroup", on_click=rename_sg_button),
         ),
-        Button(text=Const("Запросы на вступление"), id="join_admin", on_click=admin_join_button),
+        Row(
+            Button(text=Const("Запросы на вступление"), id="join_admin", on_click=admin_join_button),
+            Button(text=Const("Удалить участника"), id="del_user", on_click=admin_del_user)),
         Button(text=Const("Удалить группу"), id="del_group", on_click=admin_group_delete),
         Button(text=Const("Назад"), id="admin_back_button", on_click=admin_back_button),
         state=AdminGroupSg.panel,
         getter=admin_group_getter
     ),
+    Window(Const(text="Выберите пользователя:"),
+        user_delete_group,
+        Button(text=Const("Отменить"), id="admin_cancel", on_click=admin_cancel_button),
+        state=AdminGroupSg.del_user,
+        getter=admin_users_getter,
+    ),
     Window(
-        Const(text="Теперь введите подгруппы в формате 'Subgroup 1, Subgroup 2, Subgroup 3'"),
+        Const(text="Теперь введите подгруппы в формате 'Subgroup1, Subgroup2, Subgroup3'"),
         TextInput(id="Subgroups_input", type_factory=subgroups_check,
                   on_success=create_new_subgroup,
                   on_error=failed_check),
@@ -195,6 +212,7 @@ group_admin_dialog = Dialog(
             on_success=rename_subgroup,
             on_error=failed_check,
         ),
+        Button(text=Const("Назад"), id="g_admin_back_button", on_click=g_admin_back_button),
         Button(text=Const("Отменить"), id="admin_cancel", on_click=admin_cancel_button),
         state=AdminGroupSg.finish_sg,
     )
@@ -206,12 +224,12 @@ subgroups_admin_dialog = Dialog(
         Row(Button(text=Const("Удалить событие"), id="event_delete", on_click=admin_del_event),
             Button(text=Const("Добавить событие"), id="add_event", on_click=start_add_event),),
         Button(text=Const("Редактировать событие"), id="event_edit", on_click=admin_edit_event),
-        Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
+        Button(text=Const("Назад"), id="back", on_click=admin_event_cancel_button),
         state=AdminEventSg.panel,
     ),
     Window(Const(text="Выберите событие:"),
            admin_delete_group,
-           Button(text=Const("Отменить"), id="back", on_click=admin_cancel_button),
+           Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
            state=AdminEventSg.del_event,
            getter=event_getter,),
     Window(Const(text="Выберите событие:"),
@@ -242,20 +260,29 @@ edit_event_dialog = Dialog(
     Window(
       Const(text="Выберите событие:"),
         admin_time_group,
-        Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
+        Button(text=Const("Отменить"), id="back", on_click=edit_event_cancel),
         state=EditEventSg.start_time,
         getter=event_getter,
     ),
-    Window(Const(text="Введите новое время:"),
-           TextInput(id="event_time_edit", type_factory=time_type_factory,
-                     on_success=edit_time_success,
-                     on_error=failed_check, ),
+    Window(Const(text=f"Теперь введите новое время в формате 'ДД.ММ.ГГГГ ЧЧ:ММ' в UTC+2 ({datetime.now().time().replace(microsecond=0)}) :"),
+        TextInput(id="event_time_input", type_factory=time_type_factory,
+                  on_success=select_time_success,
+                  on_error=failed_check,),
            Button(text=Const("Назад"), id="back", on_click=back_button),
-           Button(text=Const("Отменить"), id="back", on_click=get_event_admin_panel),
+           Button(text=Const("Отменить"), id="back", on_click=edit_event_cancel),
            state=EditEventSg.time,
            ),
+    Window(
+        Const(text="Введите за сколько часов до события о нем напомнить:"),
+        TextInput(id="event_notify_input", type_factory=notify_check,
+                  on_success=edit_time_success,
+                  on_error=failed_check),
+        Button(text=Const("Назад"), id="back", on_click=back_button),
+        Button(text=Const("Отменить"), id="back", on_click=edit_event_cancel),
+        state=EditEventSg.notify_event,),
     Window(Const(text="Выберите событие:"),
            admin_comm_group,
+           Button(text=Const("Отменить"), id="back", on_click=edit_event_cancel),
            state=EditEventSg.start_comment,
            getter=event_getter,),
     Window(Const(text="Введите новый комментарий:"),
@@ -263,6 +290,8 @@ edit_event_dialog = Dialog(
                      type_factory=comment_check,
                      on_success=edit_comment_success,
                      on_error=failed_check),
+           Button(text=Const("Назад"), id="back", on_click=get_event_admin_panel),
+           Button(text=Const("Отменить"), id="back", on_click=edit_event_cancel),
            state=EditEventSg.comment,)
 )
 
@@ -272,11 +301,13 @@ join_dialog = Dialog(
         TextInput(id="join_group_input", type_factory=id_check,
                   on_success=id_check_success,
                   on_error=failed_check),
+        Button(text=Const("Отмена"), id="cancel_button", on_click=cancel_button),
         state=JoinSg.id
     ),
     Window(
         Const(text="Пользователи, желающие вступить в данную группу:"),
         user_joins_group,
+        Button(text=Const("Отменить"), id="admin_cancel", on_click=admin_cancel_button),
         state=JoinSg.main,
         getter=join_getter
     ),
@@ -286,6 +317,8 @@ join_dialog = Dialog(
             Button(text=Const("Принять"), id="accept_join", on_click=accept_join_button),
             Button(text=Const("Отклонить"), id="reject_join", on_click=reject_join_button),
         ),
+        Button(text=Const("Назад"), id="g_admin_back_button", on_click=g_admin_back_button),
+        Button(text=Const("Отменить"), id="admin_cancel", on_click=admin_cancel_button),
         state=JoinSg.choice,
     )
 )
