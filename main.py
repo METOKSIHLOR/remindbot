@@ -15,11 +15,11 @@ from db.requests import engine
 from db.tables import Base
 from handlers.user import user_router
 
-
 async def main():
     config: Config = load_config()
     redis = Redis(host="localhost", port=6379, db=0, decode_responses=True)
     storage = RedisStorage(redis=redis, key_builder=DefaultKeyBuilder(with_destiny=True))
+
     bot = Bot(
         token=config.bot.token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),

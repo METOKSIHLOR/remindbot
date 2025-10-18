@@ -12,7 +12,7 @@ from db.tables import Event
 
 def event_name_check(text: str):
     if not len(text) or len(text) > 100:
-        raise ValueError("Название должно содержать от 1 до 100 символов.")
+        raise ValueError("Název musí obsahovat 1 až 100 znaků.")
     return text
 
 async def event_name_success(message: Message, widget: ManagedTextInput, manager: DialogManager, result: str):
@@ -35,7 +35,7 @@ def parse_event_time(text: str):
 def time_type_factory(text: str) -> datetime:
     dt = parse_event_time(text)
     if not dt:
-        raise ValueError("❌ Неверный формат времени.")
+        raise ValueError("❌ Nesprávný formát času.")
     return dt
 
 async def event_time_success(message: Message, widget: ManagedTextInput, manager: DialogManager, result: datetime):
@@ -47,7 +47,7 @@ async def event_time_success(message: Message, widget: ManagedTextInput, manager
 
 def comment_check(text: str):
     if len(text) > 2000:
-        raise ValueError("Длина комментария должна быть не больше 2000 символов.")
+        raise ValueError("Délka komentáře nesmí překročit 2000 znaků.")
     return text
 
 async def event_comment_fail(message: Message, widget: ManagedTextInput, manager: DialogManager, error: ValueError):
@@ -60,7 +60,7 @@ async def event_comment_success(message: Message, widget: ManagedTextInput,
     sg_id = data.get("sg_now")
     notify = data.get("notify_time")
     if not sg_id:
-        await message.answer("Ошибка: не удалось определить подгруппу!")
+        await message.answer("Chyba: Nepodařilo se určit podskupinu!")
         return
 
     name = manager.dialog_data["event_name"]
@@ -107,7 +107,7 @@ async def on_event_selected(c, w, manager: DialogManager, item_id):
 
 def notify_check(text: str):
     if not text.isdigit():
-        raise ValueError("Похоже, вы ввели что-то кроме количества часов.")
+        raise ValueError("Zdá se, že jste zadali něco jiného než počet hodin.")
     return int(text)
 
 def parse_event_time_mixed(date_str: str) -> datetime:
@@ -130,11 +130,9 @@ async def notify_success(c, w, manager: DialogManager, result: int):
     notify_time_utc = event_time_utc - timedelta(hours=result)
 
     if notify_time_utc <= now_utc:
-        hours_until_event = (event_time_utc - now_utc).total_seconds() / 3600
         await c.answer(
-            f"❌ Напоминание не может быть установлено в прошлое.\n"
-            f"До события осталось примерно {hours_until_event:.1f} ч.\n"
-            f"Введите меньшее количество часов."
+            f"❌ Připomenutí nelze nastavit do minulosti.\n"
+            f"Zadejte menší počet hodin."
         )
         return
     else:

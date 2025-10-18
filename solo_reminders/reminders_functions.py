@@ -33,10 +33,10 @@ async def create_solo_notify(c, w, manager: DialogManager, notify_time: datetime
 
         now = datetime.now(tz=tz_utc_plus_2)
         if notify_time <= now:
-            await c.answer("❌ Время не может быть в прошлом. Попробуйте ещё раз.")
+            await c.answer("❌ Čas nemůže být v minulosti. Zkuste to prosím znovu.")
             return
     except ValueError:
-        await c.answer("❌ Неверный формат даты. Используйте 'ДД.ММ.ГГГГ ЧЧ:ММ'.")
+        await c.answer("❌ Nesprávný formát data. Použijte 'DD.MM.RRRR HH:MM'.")
         return
 
     naive_time = notify_time.replace(tzinfo=None)
@@ -59,7 +59,7 @@ async def create_solo_notify(c, w, manager: DialogManager, notify_time: datetime
         "reminder_id": reminder_id
     }).encode())
 
-    await c.answer(f"✅ Напоминание '{name}' установлено на {notify_time.strftime('%d.%m.%Y %H:%M')}")
+    await c.answer(f"✅ Připomenutí '{name}' bylo nastaveno na {notify_time.strftime('%d.%m.%Y %H:%M')}")
     await manager.reset_stack()
     await manager.start(SoloSg.main)
 
@@ -82,11 +82,12 @@ async def notify_getter(dialog_manager: DialogManager, **kwargs):
 
     result = []
     for notify in notifies:
+        formatted_time = notify.notify_time.strftime("%H:%M %d.%m.%Y")
         result.append({
             "id": notify.id,
             "user_id": user_id,
             "name": notify.name,
-            "notify_time": notify.notify_time.isoformat(),
+            "notify_time": formatted_time,
         })
 
     return {"result": result}

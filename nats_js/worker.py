@@ -21,7 +21,7 @@ async def process_schedule(msg, bot, js):
 
         delay = (notify_time - datetime.now(timezone.utc)).total_seconds()
         if delay <= 0:
-            print(f"⏩ Пропущено уведомление event {event_id}")
+            print(f"⏩ Připomenutí události {event_id} bylo přeskočeno")
             return
 
         kv = await js.key_value("notifications")
@@ -32,12 +32,12 @@ async def process_schedule(msg, bot, js):
         try:
             entry = await kv.get(key)
         except (KeyNotFoundError, KeyDeletedError):
-            print(f"❌ Напоминание {event_id} отменено или удалено")
+            print(f"❌ Připomenutí {event_id} zrušeno nebo smazáno")
             return
         print("KV entry:", await kv.get(key))
 
         if not entry:
-            print(f"❌ Напоминание {event_id} отменено")
+            print(f"❌ Připomenutí {event_id} zrušeno")
             return
 
         event = await get_event_info(event_id)
@@ -51,10 +51,10 @@ async def process_schedule(msg, bot, js):
                 setting = await user_kv.get(f"user_{user.telegram_id}")
                 if setting and json.loads(setting.value).get(f"group_{group_id}") is False:
                     continue
-                await bot.send_message(user.telegram_id, f"🔔 Напоминаю о событии "
-                                                         f"«{event.name}» в группе {group.name}!")
+                await bot.send_message(user.telegram_id, f"🔔 Připomínám událost "
+                                                         f"«{event.name}» ve skupině {group.name}!")
             except Exception as e:
-                print(f"⚠️ Ошибка отправки пользователю {user.telegram_id}: {e}")
+                print(f"⚠️ Chyba při odesílání uživateli {user.telegram_id}: {e}")
     finally:
         try:
             await msg.ack()
@@ -74,7 +74,7 @@ async def process_solo_notify(msg, bot, js):
 
         delay = (notify_time - datetime.now(timezone.utc)).total_seconds()
         if delay <= 0:
-            print(f"⏩ Пропущено сольное уведомление {reminder_id}")
+            print(f"⏩ Připomenutí pro uživatele {reminder_id} bylo přeskočeno")
             return
 
         await asyncio.sleep(delay)
@@ -84,10 +84,10 @@ async def process_solo_notify(msg, bot, js):
         try:
             entry = await kv.get(key)
         except (KeyNotFoundError, KeyDeletedError):
-            print(f"❌ Одиночные напоминание {reminder_id} отменено")
+            print(f"❌ Připomenutí {reminder_id} zrušeno")
             return
 
-        await bot.send_message(user_id, f"🔔 Напоминание: {text}")
+        await bot.send_message(user_id, f"🔔 Připomenutí: {text}")
         await kv.delete(key)
         await remove_solo_reminder(reminder_id)
 
@@ -125,7 +125,7 @@ async def main():
         cb=solo_cb
     )
 
-    print("✅ Notification worker запущен")
+    print("✅ Notification worker spuštěn")
 
     while True:
         await asyncio.sleep(1)

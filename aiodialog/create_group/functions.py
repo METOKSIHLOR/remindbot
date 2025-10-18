@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import pytz
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram.types import CallbackQuery
@@ -15,9 +18,9 @@ async def cancel_button(callback: CallbackQuery, button: Button, manager: Dialog
 
 def name_check(text: str):
     if not len(text):
-        raise ValueError("Название должно содержать хотя бы один символ")
+        raise ValueError("Název musí obsahovat alespoň jeden znak")
     if len(text) > 50:
-        raise ValueError(f"Максимальная длина названия - 50 символов")
+        raise ValueError("Maximální délka názvu je 50 znaků")
     return text
 
 async def correct_check(message: Message, widget: ManagedTextInput, manager: DialogManager, result: str):
@@ -30,7 +33,7 @@ async def failed_check(message: Message, widget: ManagedTextInput, manager: Dial
 def subgroups_check(text: str):
     subgroups = [s.strip() for s in text.split(",")]
     if not all(subgroups):
-        raise ValueError("Неверный формат подгрупп")
+        raise ValueError("Neplatný formát podskupin")
     return subgroups
 
 async def finish_create(message: Message, widget: ManagedTextInput, manager: DialogManager, result: list):
@@ -38,8 +41,14 @@ async def finish_create(message: Message, widget: ManagedTextInput, manager: Dia
     group = await create_group(name=manager.dialog_data["group_name"], owned_by=message.from_user.id)
     for subgroup_name in manager.dialog_data["subgroup_names"]:
         await create_subgroup(name=subgroup_name, group_id=group.id)
-    await message.answer(f"Поздравляю! Группа {group.name} была успешно создана!")
+    await message.answer(f"Skupina '{group.name}' byla úspěšně vytvořena!")
     manager.dialog_data.pop("group_name", None)
     manager.dialog_data.pop("subgroup_names", None)
     await manager.start(state=StartSg.main_menu)
+
+async def time_getter(dialog_manager: DialogManager, **kwargs):
+    timezone = pytz.timezone('Etc/GMT-2')
+    current_time = datetime.now(timezone).strftime('%H:%M - %d.%m.%Y')
+    return {"current_time": current_time}
+
 
