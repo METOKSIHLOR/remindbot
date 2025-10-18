@@ -79,17 +79,14 @@ async def edit_time_success(c, w, manager: DialogManager, result: int):
     notify_time_utc = event_time_utc - timedelta(hours=result)
 
     if notify_time_utc <= now_utc:
-        hours_until_event = (event_time_utc - now_utc).total_seconds() / 3600
         await c.answer(
-            f"❌ Напоминание не может быть установлено в прошлое.\n"
-            f"До события осталось примерно {hours_until_event:.1f} ч.\n"
-            f"Введите меньшее количество часов.")
+            f"❌ Připomenutí nelze nastavit do minulosti.\n"
+            f"Zadejte menší počet hodin.")
     else:
         await edit_time_event(event_id=event_id, new_time=event_time, notify=result)
-        await c.answer("✅ Время и напоминание успешно обновлены!")
+        await c.answer("✅ Čas a připomenutí byly úspěšně aktualizovány!")
         await manager.reset_stack()
         await manager.start(GroupsSg.my_events)
-
 
 async def admin_edit_comm(c, w, manager: DialogManager):
     await manager.start(EditEventSg.start_comment)
@@ -99,5 +96,5 @@ async def edit_comment_success(c, w, manager: DialogManager, result: str):
     data = await state.get_data()
     event_id = data.get("admin_edit")
     await edit_comment_event(event_id=event_id, new_comment=result)
-    await c.answer("Комментарий успешно изменен")
+    await c.answer("✅ Komentář byl úspěšně změněn")
     await manager.start(GroupsSg.my_events)

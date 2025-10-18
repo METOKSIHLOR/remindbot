@@ -2,7 +2,6 @@ from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button, Select, ScrollingGroup
 from aiogram_dialog.widgets.text import Const, Format
-from functools import partial
 
 from aiodialog.group_settings.group_functions import on_group_selected
 from aiodialog.StatsGroup import StartSg

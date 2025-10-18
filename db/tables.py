@@ -21,7 +21,6 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     first_name: Mapped[str] = mapped_column()
     last_name: Mapped[str | None] = mapped_column()
-    language: Mapped[str | None] = mapped_column()
 
     groups = relationship("Group", secondary=user_group_association, back_populates="members")
     owned_groups = relationship("Group", back_populates="user", foreign_keys="[Group.owned_by]")

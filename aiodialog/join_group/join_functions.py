@@ -37,9 +37,9 @@ async def accept_join_button(c, w, manager: DialogManager):
     await add_user_group(group_id=group_id, user_id=join.user.telegram_id)
     await bot.send_message(
         chat_id=join.user.telegram_id,
-        text=f"Ваша заявка на вступление в группу {group_id} была одобрена!")
+        text=f"Vaše žádost o připojení ke skupině {group_id} byla schválena!")
     await delete_join(id=int(join_id))
-    await c.answer("✅ Заявка обработана")
+    await c.answer("✅ Žádost byla zpracována")
     await manager.start(AdminGroupSg.panel)
 
 async def reject_join_button(c, w, manager: DialogManager):
@@ -51,34 +51,33 @@ async def reject_join_button(c, w, manager: DialogManager):
     join = await get_one_join(id=join_id)
     await bot.send_message(
         chat_id=join.user.telegram_id,
-        text=f"Ваша заявка на вступление в группу {group_id} была отклонена!")
+        text=f"Vaše žádost o připojení ke skupině {group_id} byla zamítnuta!")
     await delete_join(id=join_id)
-    await c.answer("✅ Заявка обработана")
+    await c.answer("✅ Žádost byla zpracována")
     await manager.start(AdminGroupSg.panel)
 
 def id_check(text: str):
     group = get_group(int(text))
     if not text.isdigit() or len(text) > 10:
-        raise ValueError("Кажется, вы ввели что-то кроме айди")
+        raise ValueError("Zdá se, že jste zadali něco jiného než ID")
     if not group:
-        raise ValueError("Кажется, такая группа не существует")
+        raise ValueError("Zdá se, že taková skupina neexistuje")
     return text
 
 async def id_check_success(c, w, manager: DialogManager, result: str):
     user_id = c.from_user.id
     group = int(result)
-    """if user_in_group(user_id=user_id, group_id=group):
-        await c.answer(text="Вы уже состоите в данной группе")
+    if user_in_group(user_id=user_id, group_id=group):
+        await c.answer(text="Již jste členem této skupiny")
         await manager.reset_stack()
         await manager.start(StartSg.main_menu)
-        return"""
+        return
     if await exist_join(user_id, group):
-        await c.answer(text="Вы уже подавали заявку на вступление в эту группу. \nПожалуйста, дождитесь решения владельца")
+        await c.answer(text="Již jste podali žádost o připojení do této skupiny.\nProsím, počkejte na rozhodnutí vlastníka")
         await manager.reset_stack()
         await manager.start(StartSg.main_menu)
         return
     await create_join_request(user_id, group)
-    await c.answer("Заявка успешно отправлена на рассмотрение")
+    await c.answer("Žádost byla úspěšně odeslána ke schválení")
     await manager.reset_stack()
     await manager.start(StartSg.main_menu)
-

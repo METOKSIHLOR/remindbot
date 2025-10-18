@@ -1,0 +1,399 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-10-18 11:58+0200\n"
+"PO-Revision-Date: 2025-10-17 14:59+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: aiodialog/admin/event_admin_func.py:85
+#: aiodialog/event_settings/event_functions.py:134
+msgid ""
+"❌ Напоминание не может быть установлено в прошлое.\n"
+"Введите меньшее количество часов."
+msgstr ""
+"❌ Напоминание не может быть установлено в прошлое.\n"
+"Введите меньшее количество часов."
+
+#: aiodialog/admin/event_admin_func.py:88
+msgid "✅ Время и напоминание успешно обновлены!"
+msgstr "✅ Время и напоминание успешно обновлены!"
+
+#: aiodialog/admin/group_admin_func.py:35
+msgid "Подгруппа была успешно добавлена"
+msgstr "Подгруппа была успешно добавлена"
+
+#: aiodialog/admin/group_admin_func.py:37
+msgid "Подгруппы были успешно добавлены"
+msgstr "Подгруппы были успешно добавлены"
+
+#: aiodialog/admin/group_admin_func.py:114
+msgid "Юзер успешно удален"
+msgstr "Юзер успешно удален"
+
+#: aiodialog/create_group/functions.py:22
+msgid "Название должно содержать хотя бы один символ"
+msgstr "Название должно содержать хотя бы один символ"
+
+#: aiodialog/create_group/functions.py:24
+msgid "Максимальная длина названия - 50 символов"
+msgstr "Максимальная длина названия - 50 символов"
+
+#: aiodialog/create_group/functions.py:37
+msgid "Неверный формат подгрупп"
+msgstr "Неверный формат подгрупп"
+
+#: aiodialog/create_group/functions.py:45
+#, fuzzy, python-brace-format
+msgid "Поздравляю! Группа {group_name} была успешно создана!"
+msgstr "Подгруппа была успешно добавлена"
+
+#: aiodialog/dialogs/dialogs.py:46
+msgid "ℹ️ Меню"
+msgstr "ℹ️ Меню"
+
+#: aiodialog/dialogs/dialogs.py:48
+msgid "👥 Группы"
+msgstr "👥 Группы"
+
+#: aiodialog/dialogs/dialogs.py:51
+msgid "➕ Создать группу"
+msgstr "➕ Создать группу"
+
+#: aiodialog/dialogs/dialogs.py:52
+msgid "👨‍👩‍👦 Вступить в Группу"
+msgstr "👨‍👩‍👦 Вступить в Группу"
+
+#: aiodialog/dialogs/dialogs.py:54
+msgid "🔔 Личные напоминания"
+msgstr "🔔 Личные напоминания"
+
+#: aiodialog/dialogs/dialogs.py:61
+msgid "Придумайте название для группы"
+msgstr "Придумайте название для группы"
+
+#: aiodialog/dialogs/dialogs.py:65 aiodialog/dialogs/dialogs.py:73
+#: aiodialog/dialogs/dialogs.py:116 aiodialog/dialogs/dialogs.py:125
+#: aiodialog/dialogs/dialogs.py:132 aiodialog/dialogs/dialogs.py:141
+#: aiodialog/dialogs/dialogs.py:167 aiodialog/dialogs/dialogs.py:176
+#: aiodialog/dialogs/dialogs.py:182 aiodialog/dialogs/dialogs.py:202
+#: aiodialog/dialogs/dialogs.py:208 aiodialog/dialogs/dialogs.py:221
+#: aiodialog/dialogs/dialogs.py:238 aiodialog/dialogs/dialogs.py:243
+#: aiodialog/dialogs/dialogs.py:251 aiodialog/dialogs/dialogs.py:269
+#: aiodialog/dialogs/dialogs.py:278 aiodialog/dialogs/dialogs.py:288
+#: aiodialog/dialogs/dialogs.py:292 aiodialog/dialogs/dialogs.py:301
+#: aiodialog/dialogs/dialogs.py:311 aiodialog/dialogs/dialogs.py:317
+#: aiodialog/dialogs/dialogs.py:328 aiodialog/dialogs/dialogs.py:354
+#: aiodialog/dialogs/dialogs.py:359
+msgid "❌ Отменить"
+msgstr "❌ Отменить"
+
+#: aiodialog/dialogs/dialogs.py:68 aiodialog/dialogs/dialogs.py:172
+msgid "Теперь введите подгруппы в формате 'Subgroup1, Subgroup2, Subgroup3'"
+msgstr "Теперь введите подгруппы в формате 'Subgroup1, Subgroup2, Subgroup3'"
+
+#: aiodialog/dialogs/dialogs.py:72 aiodialog/dialogs/dialogs.py:88
+#: aiodialog/dialogs/dialogs.py:96 aiodialog/dialogs/dialogs.py:104
+#: aiodialog/dialogs/dialogs.py:124 aiodialog/dialogs/dialogs.py:131
+#: aiodialog/dialogs/dialogs.py:140 aiodialog/dialogs/dialogs.py:161
+#: aiodialog/dialogs/dialogs.py:220 aiodialog/dialogs/dialogs.py:233
+#: aiodialog/dialogs/dialogs.py:250 aiodialog/dialogs/dialogs.py:263
+#: aiodialog/dialogs/dialogs.py:277 aiodialog/dialogs/dialogs.py:287
+#: aiodialog/dialogs/dialogs.py:300 aiodialog/dialogs/dialogs.py:327
+#: aiodialog/dialogs/dialogs.py:353
+msgid "↩️ Назад"
+msgstr "↩️ Назад"
+
+#: aiodialog/dialogs/dialogs.py:79
+msgid "👥 Ваши группы:"
+msgstr "👥 Ваши группы:"
+
+#: aiodialog/dialogs/dialogs.py:81 aiodialog/dialogs/dialogs.py:89
+#: aiodialog/dialogs/dialogs.py:97 aiodialog/dialogs/dialogs.py:340
+msgid "ℹ️ Главное меню"
+msgstr "ℹ️ Главное меню"
+
+#: aiodialog/dialogs/dialogs.py:85
+msgid "Ваши подгруппы:"
+msgstr "Ваши подгруппы:"
+
+#: aiodialog/dialogs/dialogs.py:87 aiodialog/dialogs/dialogs.py:95
+#: aiodialog/dialogs/dialogs.py:228
+msgid "⚙️Настройки"
+msgstr "⚙️Настройки"
+
+#: aiodialog/dialogs/dialogs.py:93
+msgid "События в данной подгруппе:"
+msgstr "События в данной подгруппе:"
+
+#: aiodialog/dialogs/dialogs.py:101
+#, python-brace-format
+msgid "Событие: {result.name}"
+msgstr "Событие: {result.name}"
+
+#: aiodialog/dialogs/dialogs.py:102
+#, python-brace-format
+msgid "Когда: {result.timestamp}"
+msgstr "Когда: {result.timestamp}"
+
+#: aiodialog/dialogs/dialogs.py:103
+#, python-brace-format
+msgid "Описание: {result.comment}"
+msgstr "Описание: {result.comment}"
+
+#: aiodialog/dialogs/dialogs.py:112 aiodialog/dialogs/dialogs.py:344
+msgid "Введите название события:"
+msgstr "Введите название события:"
+
+#: aiodialog/dialogs/dialogs.py:120 aiodialog/dialogs/dialogs.py:273
+#: aiodialog/dialogs/dialogs.py:349
+#, python-brace-format
+msgid ""
+"Теперь введите время его проведения в формате 'ДД.ММ.ГГГГ ЧЧ:ММ' в UTC+2 "
+"({current_time}):"
+msgstr ""
+"Теперь введите время его проведения в формате 'ДД.ММ.ГГГГ ЧЧ:ММ' в UTC+2 "
+"({current_time}):"
+
+#: aiodialog/dialogs/dialogs.py:129 aiodialog/dialogs/dialogs.py:283
+msgid "Введите за сколько часов до события о нем напомнить:"
+msgstr "Введите за сколько часов до события о нем напомнить:"
+
+#: aiodialog/dialogs/dialogs.py:136
+msgid "Теперь введите описание этого события:"
+msgstr "Теперь введите описание этого события:"
+
+#: aiodialog/dialogs/dialogs.py:148
+#, python-brace-format
+msgid "ID группы: {group_id}"
+msgstr "ID группы: {group_id}"
+
+#: aiodialog/dialogs/dialogs.py:150
+msgid "➕ Добавить подгруппу"
+msgstr "➕ Добавить подгруппу"
+
+#: aiodialog/dialogs/dialogs.py:151
+msgid "➖ Удалить подгруппу"
+msgstr "➖ Удалить подгруппу"
+
+#: aiodialog/dialogs/dialogs.py:154
+msgid "🖊 Переименовать группу"
+msgstr "🖊 Переименовать группу"
+
+#: aiodialog/dialogs/dialogs.py:155
+msgid "🖊 Переименовать подгруппу"
+msgstr "🖊 Переименовать подгруппу"
+
+#: aiodialog/dialogs/dialogs.py:158
+msgid "📋 Запросы на вступление"
+msgstr "📋 Запросы на вступление"
+
+#: aiodialog/dialogs/dialogs.py:159
+msgid "⛔️ Удалить участника"
+msgstr "⛔️ Удалить участника"
+
+#: aiodialog/dialogs/dialogs.py:160
+msgid "⚠️ Удалить группу"
+msgstr "⚠️ Удалить группу"
+
+#: aiodialog/dialogs/dialogs.py:165
+msgid "Выберите пользователя:"
+msgstr "Выберите пользователя:"
+
+#: aiodialog/dialogs/dialogs.py:180
+msgid "Теперь выберите какую подгруппу вы хотите удалить."
+msgstr "Теперь выберите какую подгруппу вы хотите удалить."
+
+#: aiodialog/dialogs/dialogs.py:187
+msgid "Вы уверены?"
+msgstr "Вы уверены?"
+
+#: aiodialog/dialogs/dialogs.py:189
+msgid "✅ Да"
+msgstr "✅ Да"
+
+#: aiodialog/dialogs/dialogs.py:190
+msgid "❌ Нет"
+msgstr "❌ Нет"
+
+#: aiodialog/dialogs/dialogs.py:195
+msgid "Введите новое название группы"
+msgstr "Введите новое название группы"
+
+#: aiodialog/dialogs/dialogs.py:206
+msgid "Выберите подгруппу"
+msgstr "Выберите подгруппу"
+
+#: aiodialog/dialogs/dialogs.py:213
+msgid "Введите новое название подгруппы"
+msgstr "Введите новое название подгруппы"
+
+#: aiodialog/dialogs/dialogs.py:229
+msgid "➕ Добавить событие"
+msgstr "➕ Добавить событие"
+
+#: aiodialog/dialogs/dialogs.py:230
+msgid "➖ Удалить событие"
+msgstr "➖ Удалить событие"
+
+#: aiodialog/dialogs/dialogs.py:232
+msgid "🖊 Редактировать событие"
+msgstr "🖊 Редактировать событие"
+
+#: aiodialog/dialogs/dialogs.py:236 aiodialog/dialogs/dialogs.py:241
+#: aiodialog/dialogs/dialogs.py:267 aiodialog/dialogs/dialogs.py:290
+msgid "Выберите событие:"
+msgstr "Выберите событие:"
+
+#: aiodialog/dialogs/dialogs.py:246
+msgid "Введите новое название события:"
+msgstr "Введите новое название события:"
+
+#: aiodialog/dialogs/dialogs.py:258
+#, fuzzy
+msgid "⚙️Настройки"
+msgstr "⚙️Настройки"
+
+#: aiodialog/dialogs/dialogs.py:260
+msgid "✉️ Изменить комментарий"
+msgstr "✉️ Изменить комментарий"
+
+#: aiodialog/dialogs/dialogs.py:261
+msgid "⏱️ Изменить время"
+msgstr "⏱️ Изменить время"
+
+#: aiodialog/dialogs/dialogs.py:262
+msgid "📅 Переименовать событие"
+msgstr "📅 Переименовать событие"
+
+#: aiodialog/dialogs/dialogs.py:295
+msgid "Введите новый комментарий:"
+msgstr "Введите новый комментарий:"
+
+#: aiodialog/dialogs/dialogs.py:307
+msgid ""
+"Введите айди группы.\n"
+"Его можно узнать у владельца:"
+msgstr ""
+"Введите айди группы.\n"
+"Его можно узнать у владельца:"
+
+#: aiodialog/dialogs/dialogs.py:315
+msgid "Пользователи, желающие вступить в данную группу:"
+msgstr "Пользователи, желающие вступить в данную группу:"
+
+#: aiodialog/dialogs/dialogs.py:322
+msgid "Принять пользователя в группу?"
+msgstr "Принять пользователя в группу?"
+
+#: aiodialog/dialogs/dialogs.py:324
+msgid "✅ Принять"
+msgstr "✅ Принять"
+
+#: aiodialog/dialogs/dialogs.py:325
+msgid "❌ Отклонить"
+msgstr "❌ Отклонить"
+
+#: aiodialog/dialogs/dialogs.py:335
+msgid "Личные напоминания"
+msgstr "Личные напоминания"
+
+#: aiodialog/dialogs/dialogs.py:337
+msgid "✅ Добавить"
+msgstr "✅ Добавить"
+
+#: aiodialog/dialogs/dialogs.py:338
+msgid "❌ Удалить"
+msgstr "❌ Удалить"
+
+#: aiodialog/dialogs/dialogs.py:357
+msgid "Ваши актуальные события:"
+msgstr "Ваши актуальные события:"
+
+#: aiodialog/event_settings/event_functions.py:15
+msgid "Название должно содержать от 1 до 100 символов."
+msgstr "Название должно содержать от 1 до 100 символов."
+
+#: aiodialog/event_settings/event_functions.py:38
+msgid "❌ Неверный формат времени."
+msgstr "❌ Неверный формат времени."
+
+#: aiodialog/event_settings/event_functions.py:50
+msgid "Длина комментария должна быть не больше 2000 символов."
+msgstr "Длина комментария должна быть не больше 2000 символов."
+
+#: aiodialog/event_settings/event_functions.py:63
+msgid "Ошибка: не удалось определить подгруппу!"
+msgstr "Ошибка: не удалось определить подгруппу!"
+
+#: aiodialog/event_settings/event_functions.py:110
+msgid "Похоже, вы ввели что-то кроме количества часов."
+msgstr "Похоже, вы ввели что-то кроме количества часов."
+
+#: aiodialog/join_group/join_functions.py:40
+#, python-brace-format
+msgid "Ваша заявка на вступление в группу {group_id} была одобрена!"
+msgstr "Ваша заявка на вступление в группу {group_id} была одобрена!"
+
+#: aiodialog/join_group/join_functions.py:42
+#: aiodialog/join_group/join_functions.py:56
+msgid "✅ Заявка обработана"
+msgstr "✅ Заявка обработана"
+
+#: aiodialog/join_group/join_functions.py:54
+#, python-brace-format
+msgid "Ваша заявка на вступление в группу {group_id} была отклонена!"
+msgstr "Ваша заявка на вступление в группу {group_id} была отклонена!"
+
+#: aiodialog/join_group/join_functions.py:61
+msgid "Кажется, вы ввели что-то кроме айди"
+msgstr "Кажется, вы ввели что-то кроме айди"
+
+#: aiodialog/join_group/join_functions.py:69
+msgid "Вы уже состоите в данной группе"
+msgstr "Вы уже состоите в данной группе"
+
+#: aiodialog/join_group/join_functions.py:74
+msgid "Кажется, такая группа не существует."
+msgstr "Кажется, такая группа не существует."
+
+#: aiodialog/join_group/join_functions.py:77
+msgid ""
+"Вы уже подавали заявку на вступление в эту группу. \n"
+"Пожалуйста, дождитесь решения владельца"
+msgstr ""
+"Вы уже подавали заявку на вступление в эту группу. \n"
+"Пожалуйста, дождитесь решения владельца"
+
+#: aiodialog/join_group/join_functions.py:82
+msgid "Заявка успешно отправлена на рассмотрение"
+msgstr "Заявка успешно отправлена на рассмотрение"
+
+#: nats_js/worker.py:52
+#, python-brace-format
+msgid "🔔 Напоминаю о событии «{event_name}» в группе {group_name}!"
+msgstr "🔔 Напоминаю о событии «{event_name}» в группе {group_name}!"
+
+#: nats_js/worker.py:86
+#, python-brace-format
+msgid "🔔 Напоминание: {text}"
+msgstr "🔔 Напоминание: {text}"
+
+#: solo_reminders/reminders_functions.py:63
+#, python-brace-format
+msgid "✅ Напоминание '{name}' установлено на {time}"
+msgstr "✅ Напоминание '{name}' установлено на {time}"
+

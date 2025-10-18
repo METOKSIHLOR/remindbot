@@ -22,15 +22,5 @@ async def cmd_start(message: Message, dialog_manager: DialogManager):
             first_name=first_name,
             last_name=last_name
         )
-        await dialog_manager.start(StartSg.start)
-
-    elif not user.language:
-        await dialog_manager.reset_stack()
-        await dialog_manager.start(StartSg.start)
-    else:
-        await dialog_manager.reset_stack()
-        await dialog_manager.start(StartSg.main_menu)
-
-@user_router.message(Command("change_language"))
-async def cmd_change_language(message: Message, dialog_manager: DialogManager):
-    await dialog_manager.start(StartSg.start)
+    await dialog_manager.reset_stack()
+    await dialog_manager.start(StartSg.main_menu)

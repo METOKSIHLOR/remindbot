@@ -32,9 +32,9 @@ async def create_new_subgroup(message: Message, widget: ManagedTextInput, manage
     for subgroup in result:
         await create_subgroup(name=subgroup, group_id=group_id)
     if len(result) == 1:
-        await message.answer("Подгруппа была успешно добавлена")
+        await message.answer("Podskupina byla úspěšně přidána")
     else:
-        await message.answer("Подгруппы были успешно добавлены")
+        await message.answer("Podskupiny byly úspěšně přidány")
     await manager.start(GroupsSg.my_subgroups)
 
 async def start_del_subgroup(c, w, manager: DialogManager):
@@ -112,5 +112,5 @@ async def admin_delete_user_selected(c, w, manager: DialogManager, item_id):
     data = await state.get_data()
     group_id = data.get("group_id")
     await remove_user_from_group(user_id=int(item_id), group_id=int(group_id))
-    await c.answer("Юзер успешно удален")
+    await c.answer("Uživatel byl úspěšně odstraněn")
     await manager.switch_to(AdminGroupSg.panel)

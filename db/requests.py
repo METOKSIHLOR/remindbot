@@ -61,15 +61,6 @@ async def create_subgroup(name: str, group_id: int):
         session.add(subgroup)
         await session.commit()
 
-
-async def set_user_language(user_id: int, language: str):
-    stmt = select(User).where(User.telegram_id == user_id)
-    async with AsyncSessionLocal() as session:
-        user = await session.execute(stmt)
-        user = user.scalar()
-        user.language = language
-        await session.commit()
-
 async def get_user_groups(user_id: int):
     async with AsyncSessionLocal() as session:
         result = await session.execute(
