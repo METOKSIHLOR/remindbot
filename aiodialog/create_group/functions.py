@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pytz
 from aiogram_dialog import DialogManager
@@ -47,8 +48,7 @@ async def finish_create(message: Message, widget: ManagedTextInput, manager: Dia
     await manager.start(state=StartSg.main_menu)
 
 async def time_getter(dialog_manager: DialogManager, **kwargs):
-    timezone = pytz.timezone('Etc/GMT-2')
-    current_time = datetime.now(timezone).strftime('%H:%M - %d.%m.%Y')
+    current_time = datetime.now(ZoneInfo("Europe/Prague")).strftime('%H:%M %d.%m.%Y')
     return {"current_time": current_time}
 
 

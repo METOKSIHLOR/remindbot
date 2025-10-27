@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 
 from aiogram_dialog import DialogManager, manager
 from aiogram_dialog.widgets.input import ManagedTextInput
@@ -24,9 +25,11 @@ async def event_name_fail(message: Message, widget: ManagedTextInput, manager: D
 
 def parse_event_time(text: str):
     try:
-        dt = datetime.strptime(text.strip(), "%d.%m.%Y %H:%M")
-        dt = dt.replace(tzinfo=timezone(timedelta(hours=2)))
-        if dt < datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=2))):
+        prague_tz = ZoneInfo("Europe/Prague")
+        dt = datetime.strptime(text.strip(), "%H:%M %d.%m.%Y")
+        dt = dt.replace(tzinfo=prague_tz)
+        now_prague = datetime.now(prague_tz)
+        if dt < now_prague:
             return None
         return dt
     except ValueError:
@@ -40,8 +43,13 @@ def time_type_factory(text: str) -> datetime:
 
 async def event_time_success(message: Message, widget: ManagedTextInput, manager: DialogManager, result: datetime):
     state = manager.middleware_data["state"]
-    tz_utc_plus_2 = timezone(timedelta(hours=2))
-    result = result.replace(tzinfo=tz_utc_plus_2)
+
+    prague_tz = ZoneInfo("Europe/Prague")
+    if result.tzinfo is None:
+        result = result.replace(tzinfo=prague_tz)
+    else:
+        result = result.astimezone(prague_tz)
+
     await state.update_data(event_time=result.isoformat())
     await manager.next()
 
@@ -110,31 +118,37 @@ def notify_check(text: str):
         raise ValueError("Zdá se, že jste zadali něco jiného než počet hodin.")
     return int(text)
 
-def parse_event_time_mixed(date_str: str) -> datetime:
+
+def parse_event_time_utc(text: str) -> datetime:
+    prague_tz = ZoneInfo("Europe/Prague")
+
     try:
-        return datetime.fromisoformat(date_str)
+        dt = datetime.fromisoformat(text)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=prague_tz)
+        dt_utc = dt.astimezone(timezone.utc)
+        return dt_utc
     except ValueError:
-        return datetime.strptime(date_str, "%d.%m.%Y %H:%M")
+        naive = datetime.strptime(text.strip(), "%H:%M %d.%m.%Y")
+        dt = naive.replace(tzinfo=prague_tz)
+        dt_utc = dt.astimezone(timezone.utc)
+        return dt_utc
 
 async def notify_success(c, w, manager: DialogManager, result: int):
     state = manager.middleware_data["state"]
     data = await state.get_data()
 
-    event_time = parse_event_time_mixed(data["event_time"])
-    tz_utc_plus_2 = timezone(timedelta(hours=2))
-    if event_time.tzinfo is None:
-        event_time = event_time.replace(tzinfo=tz_utc_plus_2)
-
+    event_time_utc = parse_event_time_utc(data["event_time"])
     now_utc = datetime.now(timezone.utc)
-    event_time_utc = event_time.astimezone(timezone.utc)
     notify_time_utc = event_time_utc - timedelta(hours=result)
 
-    if notify_time_utc <= now_utc:
+    if notify_time_utc < now_utc:
+        print(f"notify_time: {notify_time_utc}, now: {now_utc}, event_time: {event_time_utc}")
         await c.answer(
-            f"❌ Připomenutí nelze nastavit do minulosti.\n"
-            f"Zadejte menší počet hodin."
+            "❌ Připomenutí nelze nastavit do minulosti.\n"
+            "Zadejte menší počet hodin."
         )
         return
-    else:
-        await state.update_data(notify_time=result)
-        await manager.next()
+
+    await state.update_data(notify_time=result)
+    await manager.next()

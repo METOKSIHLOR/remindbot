@@ -1,5 +1,7 @@
 import json
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from nats.aio.client import Client as NATS
 from nats.js.api import KeyValueConfig
 from nats.js.kv import KeyValue
@@ -31,17 +33,24 @@ async def get_js_connection():
     return nc, js
 
 async def schedule_event_notify(js, event_id: int, notify_time: datetime, group_id: int):
+    prague_tz = ZoneInfo("Europe/Prague")
+
+    if notify_time.tzinfo is None:
+        notify_time = notify_time.replace(tzinfo=prague_tz)
+
     kv = await js.key_value("notifications")
     key = f"event_{event_id}"
 
+    prague_time = notify_time.astimezone(prague_tz)
+
     await kv.put(key, json.dumps({
-        "notify_time": notify_time.isoformat(),
+        "notify_time": prague_time.isoformat(),
         "group_id": group_id,
     }).encode("utf-8"))
 
     await js.publish("events.schedule", json.dumps({
         "event_id": event_id,
-        "notify_time": notify_time.isoformat(),
+        "notify_time": prague_time.isoformat(),
         "group_id": group_id,
     }).encode())
 

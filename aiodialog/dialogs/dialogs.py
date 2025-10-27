@@ -25,7 +25,7 @@ from aiodialog.event_settings.event_functions import start_add_event, event_name
     event_name_fail, event_time_success, event_comment_success, comment_check, \
     event_comment_fail, event_getter, event_info_getter, time_type_factory, notify_check, notify_success
 from aiodialog.event_settings.events import events_group
-from aiodialog.group_settings.group_functions import groups_getter
+from aiodialog.group_settings.group_functions import groups_getter, leave_group_button, leave_group, leave_cancel
 from aiodialog.group_settings.groups import main_menu, groups_group
 from aiodialog.join_group.join_functions import join_getter, accept_join_button, reject_join_button, id_check, \
     id_check_success
@@ -79,6 +79,7 @@ groups_dialog = Dialog(
     Window(
         Const(text="👥 Vaše podskupiny:"),
         subgroups_group,
+        Button(text=Const("🚪 Opustit skupinu"), id="leave_group", on_click=leave_group_button, when="not_admin"),
         Button(text=Const("⚙️ Nastavení"), id="group_admin_panel", on_click=get_group_admin_panel, when="is_admin"),
         Button(text=Const("↩️ Zpět"), id="back", on_click=back_button),
         Button(text=Const("ℹ️ Hlavní menu"), id="main_menu", on_click=main_menu),
@@ -99,7 +100,15 @@ groups_dialog = Dialog(
         Button(text=Const("↩️ Zpět"), id="back", on_click=back_button),
         state=GroupsSg.select_event,
         getter=event_info_getter
-    )
+    ),
+    Window(
+        Const(text="Jste si jisti?"),
+        Row(
+            Button(text=Const("✅ Ano"), id="yes_leave", on_click=leave_group),
+            Button(text=Const("❌ Ne"), id="no_leave", on_click=leave_cancel)
+        ),
+        state=GroupsSg.correct_leave,
+    ),
     )
 
 event_dialog = Dialog(
@@ -112,7 +121,7 @@ event_dialog = Dialog(
         state=EventsSg.name
     ),
     Window(
-        Format(text="Nyní zadejte čas konání ve formátu 'DD.MM.RRRR HH:MM' v UTC+2 ({current_time}):"),
+        Format(text="Nyní zadejte čas konání ve formátu 'HH:MM DD.MM.RRRR' ({current_time}):"),
         TextInput(id="event_time_input", type_factory=time_type_factory,
                   on_success=event_time_success,
                   on_error=failed_check,),
@@ -264,7 +273,7 @@ edit_event_dialog = Dialog(
         state=EditEventSg.start_time,
         getter=event_getter,
     ),
-    Window(Format(text="Nyní zadejte čas konání ve formátu 'DD.MM.RRRR HH:MM' v UTC+2 ({current_time}):"),
+    Window(Format(text="Nyní zadejte čas konání ve formátu 'HH:MM DD.MM.RRRR' ({current_time}):"),
         TextInput(id="event_time_input", type_factory=time_type_factory,
                   on_success=select_time_success,
                   on_error=failed_check,),
@@ -315,7 +324,7 @@ join_dialog = Dialog(
     Window(
         Const(text="Přijmout uživatele do skupiny?"),
         Row(
-            Button(text=Const("✅ Принять"), id="accept_join", on_click=accept_join_button),
+            Button(text=Const("✅ Schválit"), id="accept_join", on_click=accept_join_button),
             Button(text=Const("❌ Odmítnout"), id="reject_join", on_click=reject_join_button),
         ),
         Button(text=Const("↩️ Zpět"), id="g_admin_back_button", on_click=g_admin_back_button),
@@ -340,7 +349,7 @@ solo_dialog = Dialog(
         Button(text=Const("❌ Zrušit"), id="cancel_button", on_click=main_menu),
         state=SoloSg.add_name,
     ),
-    Window(Format(text="Zadejte čas konání ve formátu 'DD.MM.RRRR HH:MM' v UTC+2 ({current_time}):"),
+    Window(Format(text="Zadejte čas konání ve formátu 'HH:MM DD.MM.RRRR' ({current_time}):"),
            TextInput(id="solo_time_input", type_factory=time_type_factory,
                   on_success=create_solo_notify,
                   on_error=failed_check,),

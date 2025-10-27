@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, selectinload
 from db.tables import User, Group, Subgroup, Event, JoinRequest, user_group_association, SoloReminder
 from config.config import load_config
-from sqlalchemy import select, delete, update, exists, and_
+from sqlalchemy import select, delete, update, exists, and_, text
 import asyncio
 
 from nats_js.notifications import get_js_connection, schedule_event_notify, cancel_event_notify, set_user_group_notify
@@ -91,28 +92,29 @@ async def add_event(sg_id: int, name: str, timestamp, comment: str):
 
 
 async def create_new_event(sg_id: int, name: str, timestamp: datetime, comment: str, notify: int):
-    timestamp_utc = timestamp.astimezone(timezone.utc)
+    prague_tz = ZoneInfo("Europe/Prague")
+    timestamp_prag = timestamp.astimezone(prague_tz)
 
     async with AsyncSessionLocal() as session:
         event = Event(
             sg_id=sg_id,
             name=name,
-            timestamp=timestamp_utc.replace(tzinfo=None),
+            timestamp=timestamp_prag.replace(tzinfo=None),
             comment=comment
         )
         session.add(event)
         await session.commit()
         await session.refresh(event)
 
-    notify_time_utc = timestamp_utc - timedelta(hours=notify)
+    notify_time_prag = timestamp_prag - timedelta(hours=notify)
 
     nc, js = await get_js_connection()
     subgroup = await get_sg(sg_id)
-    await schedule_event_notify(js, event.id, notify_time_utc, group_id=subgroup.group_id)
+    await schedule_event_notify(js, event.id, notify_time_prag, group_id=subgroup.group_id)
 
-    print("Now (UTC):", datetime.now(timezone.utc))
-    print("Notify time (UTC):", notify_time_utc)
-    print("Delay (sec):", (notify_time_utc - datetime.now(timezone.utc)).total_seconds())
+    print("Now (prague):", datetime.now(prague_tz))
+    print("Notify time (prague):", notify_time_prag)
+    print("Delay (sec):", (notify_time_prag - datetime.now(prague_tz)).total_seconds())
 
     await nc.close()
     return event
@@ -226,33 +228,32 @@ async def delete_event(event_id: int):
     await nc.close()
 
 async def edit_time_event(event_id: int, new_time: datetime, notify: int):
-    timestamp_utc = new_time.astimezone(timezone.utc).replace(tzinfo=None)
-    notify_time_utc = timestamp_utc - timedelta(hours=notify)
+    prague_tz = ZoneInfo("Europe/Prague")
+    timestamp_prag = new_time.astimezone(prague_tz).replace(tzinfo=None)
+    notify_time_prag = timestamp_prag - timedelta(hours=notify)
 
     event_id = int(event_id)
     async with AsyncSessionLocal() as session:
         async with session.begin():
             await session.execute(
                 update(Event)
-                .where(Event.id == event_id).values(timestamp=timestamp_utc)
+                .where(Event.id == event_id).values(timestamp=timestamp_prag)
             )
 
     nc, js = await get_js_connection()
     event = await get_event_info(event_id)
     subgroup = await get_sg(event.sg_id)
     await cancel_event_notify(js, event_id)
-    await schedule_event_notify(js, event.id, notify_time_utc, group_id=subgroup.group_id)
+    await schedule_event_notify(js, event.id, notify_time_prag, group_id=subgroup.group_id)
 
-    print("Now (UTC):", datetime.now(timezone.utc))
-    print("Notify time (UTC):", notify_time_utc)
+    print("Now (prague):", datetime.now(prague_tz))
+    print("Notify time (prague):", notify_time_prag)
 
-    # ===== Вставка исправления =====
-    if notify_time_utc.tzinfo is None:
-        notify_time_utc = notify_time_utc.replace(tzinfo=timezone.utc)
+    if notify_time_prag.tzinfo is None:
+        notify_time_utc = notify_time_prag.replace(tzinfo=prague_tz)
 
-    delay_seconds = (notify_time_utc - datetime.now(timezone.utc)).total_seconds()
+    delay_seconds = (notify_time_utc - datetime.now(prague_tz)).total_seconds()
     print("Delay (sec):", delay_seconds)
-    # ================================
 
     await nc.close()
     return event
@@ -338,7 +339,7 @@ async def user_in_group(user_id: int, group_id: int):
                     Group.members.any(User.telegram_id == user_id)
                 )
             )
-        return result.scalar().one_or_none() is not None
+        return result.scalar_one_or_none() is not None
 
 async def get_group_users(group_id: int):
     async with AsyncSessionLocal() as session:

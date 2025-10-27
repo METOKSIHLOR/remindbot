@@ -14,6 +14,7 @@ class GroupsSg(StatesGroup):
     my_subgroups = State()
     my_events = State()
     select_event = State()
+    correct_leave = State()
 
 class EventsSg(StatesGroup):
     name = State()

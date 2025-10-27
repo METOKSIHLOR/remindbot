@@ -36,7 +36,7 @@ async def create_solo_notify(c, w, manager: DialogManager, notify_time: datetime
             await c.answer("❌ Čas nemůže být v minulosti. Zkuste to prosím znovu.")
             return
     except ValueError:
-        await c.answer("❌ Nesprávný formát data. Použijte 'DD.MM.RRRR HH:MM'.")
+        await c.answer("❌ Nesprávný formát data. Použijte 'HH:MM DD.MM.RRRR'.")
         return
 
     naive_time = notify_time.replace(tzinfo=None)
@@ -59,7 +59,7 @@ async def create_solo_notify(c, w, manager: DialogManager, notify_time: datetime
         "reminder_id": reminder_id
     }).encode())
 
-    await c.answer(f"✅ Připomenutí '{name}' bylo nastaveno na {notify_time.strftime('%d.%m.%Y %H:%M')}")
+    await c.answer(f"✅ Připomenutí '{name}' bylo nastaveno na {notify_time.strftime('%H:%M %d.%m.%Y')}")
     await manager.reset_stack()
     await manager.start(SoloSg.main)
 
