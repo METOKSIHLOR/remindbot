@@ -1,4 +1,5 @@
 from datetime import timezone, timedelta, datetime
+from zoneinfo import ZoneInfo
 
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
@@ -71,14 +72,14 @@ async def edit_time_success(c, w, manager: DialogManager, result: int):
     event_id = data.get("admin_edit")
 
     event_time = datetime.fromisoformat(data.get("event_time"))
-    tz_utc_plus_2 = timezone(timedelta(hours=2))
-    event_time = event_time.replace(tzinfo=tz_utc_plus_2)
+    prague_tz = ZoneInfo("Europe/Prague")
+    event_time = event_time.replace(tzinfo=prague_tz)
 
-    now_utc = datetime.now(timezone.utc)
-    event_time_utc = event_time.astimezone(timezone.utc)
-    notify_time_utc = event_time_utc - timedelta(hours=result)
+    now_prag = datetime.now(prague_tz)
+    event_time_prag = event_time.astimezone(prague_tz)
+    notify_time_prag = event_time_prag - timedelta(hours=result)
 
-    if notify_time_utc <= now_utc:
+    if notify_time_prag <= now_prag:
         await c.answer(
             f"❌ Připomenutí nelze nastavit do minulosti.\n"
             f"Zadejte menší počet hodin.")

@@ -57,27 +57,29 @@ async def reject_join_button(c, w, manager: DialogManager):
     await manager.start(AdminGroupSg.panel)
 
 def id_check(text: str):
-    group = get_group(int(text))
     if not text.isdigit() or len(text) > 10:
         raise ValueError("Zdá se, že jste zadali něco jiného než ID")
-    if not group:
-        raise ValueError("Zdá se, že taková skupina neexistuje")
     return text
 
 async def id_check_success(c, w, manager: DialogManager, result: str):
     user_id = c.from_user.id
-    group = int(result)
-    if user_in_group(user_id=user_id, group_id=group):
+    group_id = int(result)
+    group = await get_group(group_id)
+    if not group:
+        await c.answer("Zdá se, že taková skupina neexistuje")
+        await manager.reset_stack()
+        await manager.start(StartSg.main_menu)
+    if await user_in_group(user_id=user_id, group_id=group_id):
         await c.answer(text="Již jste členem této skupiny")
         await manager.reset_stack()
         await manager.start(StartSg.main_menu)
         return
-    if await exist_join(user_id, group):
+    if await exist_join(user_id, group_id):
         await c.answer(text="Již jste podali žádost o připojení do této skupiny.\nProsím, počkejte na rozhodnutí vlastníka")
         await manager.reset_stack()
         await manager.start(StartSg.main_menu)
         return
-    await create_join_request(user_id, group)
+    await create_join_request(user_id, group_id)
     await c.answer("Žádost byla úspěšně odeslána ke schválení")
     await manager.reset_stack()
     await manager.start(StartSg.main_menu)

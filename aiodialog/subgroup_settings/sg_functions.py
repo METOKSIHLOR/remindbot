@@ -19,4 +19,4 @@ async def subgroups_getter(dialog_manager: DialogManager, **kwargs):
     group = await get_group(group_id)
     is_admin = group.owned_by == user
     await state.update_data(is_admin=is_admin)
-    return {"result": subgroups, "is_admin": is_admin}
+    return {"result": subgroups, "is_admin": is_admin, "not_admin": not is_admin}
