@@ -40,7 +40,7 @@ start_dialog = Dialog(
     Window(
         Const("ℹ️ Menu"),
         Row(
-            Button(text=Const("👥 Skupiny:"), id="my_groups", on_click=groups_button),
+            Button(text=Const("👥 Skupiny"), id="my_groups", on_click=groups_button),
         ),
         Row(
             Button(text=Const("➕ Vytvořit skupinu"), id="create_button", on_click=cr_button),
@@ -77,7 +77,7 @@ groups_dialog = Dialog(
         state=GroupsSg.my_groups,
         getter=groups_getter,),
     Window(
-        Const(text="👥 Vaše podskupiny:"),
+        Const(text="👥 Podskupiny:"),
         subgroups_group,
         Button(text=Const("🚪 Opustit skupinu"), id="leave_group", on_click=leave_group_button, when="not_admin"),
         Button(text=Const("⚙️ Nastavení"), id="group_admin_panel", on_click=get_group_admin_panel, when="is_admin"),
@@ -95,8 +95,8 @@ groups_dialog = Dialog(
         getter=event_getter),
     Window(
         Format("Událost: {result.name}"),
-        Format("Kdy: {result.timestamp}"),
-        Format("Komentář: {result.comment}"),
+        Format("\nKdy: {result.timestamp}"),
+        Format("\nKomentář: {result.comment}"),
         Button(text=Const("↩️ Zpět"), id="back", on_click=back_button),
         state=GroupsSg.select_event,
         getter=event_info_getter
@@ -344,7 +344,7 @@ solo_dialog = Dialog(
         state=SoloSg.main,
     ),
     Window(
-        Const(text="Zadejte nový název události:"),
+        Const(text="Zadejte název události:"),
         TextInput(type_factory=name_check, id="solo_name_input", on_success=solo_name_success, on_error=failed_check),
         Button(text=Const("❌ Zrušit"), id="cancel_button", on_click=main_menu),
         state=SoloSg.add_name,
