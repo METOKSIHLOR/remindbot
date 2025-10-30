@@ -96,7 +96,7 @@ groups_dialog = Dialog(
     Window(
         Format("Událost: {result.name}"),
         Format("Kdy: {result.timestamp}"),
-        Format("Popis: {result.comment}"),
+        Format("Komentář: {result.comment}"),
         Button(text=Const("↩️ Zpět"), id="back", on_click=back_button),
         state=GroupsSg.select_event,
         getter=event_info_getter
@@ -126,14 +126,14 @@ event_dialog = Dialog(
                   on_success=event_time_success,
                   on_error=failed_check,),
         Button(text=Const("↩️ Zpět"), id="back", on_click=back_button),
-        Button(text=Const("❌ Zrušit"), id="back", on_click=get_event_admin_panel),
+        Button(text=Const("❌ Zrušit"), id="cancel_button", on_click=get_event_admin_panel),
         state=EventsSg.time,
         getter=time_getter),
     Window(
         Const(text="Zadejte, kolik hodin před událostí chcete připomenutí:"),
         TextInput(id="event_notify_input", type_factory=notify_check, on_success=notify_success, on_error=failed_check),
         Button(text=Const("↩️ Zpět"), id="back", on_click=back_button),
-        Button(text=Const("❌ Zrušit"), id="back", on_click=get_event_admin_panel),
+        Button(text=Const("❌ Zrušit"), id="cancel_button", on_click=get_event_admin_panel),
         state=EventsSg.notify_time,
     ),
     Window(
