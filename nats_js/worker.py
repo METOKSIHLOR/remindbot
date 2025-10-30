@@ -54,13 +54,14 @@ async def process_schedule(msg, bot, js):
 
             event = await get_event_info(event_id)
             subgroup = await get_sg(event.sg_id)
+            group = await get_group(subgroup.group_id)
             users = await get_group_users(subgroup.group_id)
             user_kv = await js.key_value("user_settings")
             for user in users:
                 setting = await user_kv.get(f"user_{user.telegram_id}")
                 if setting and not json.loads(setting.value).get(f"group_{subgroup.group_id}", True):
                     continue
-                await bot.send_message(user.telegram_id, f"🔔 Připomínám událost «{event.name}»")
+                await bot.send_message(user.telegram_id, f"🔔 Připomínám událost «{event.name}» ({subgroup.name}) ve skupině {group.name}")
         except asyncio.CancelledError:
             print(f"❌ Задача уведомления {event_id} отменена")
             return
