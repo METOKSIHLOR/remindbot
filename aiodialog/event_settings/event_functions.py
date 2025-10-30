@@ -71,6 +71,18 @@ async def event_comment_success(message: Message, widget: ManagedTextInput,
         await message.answer("Chyba: Nepodařilo se určit podskupinu!")
         return
 
+    event_time_utc = parse_event_time_utc(data["event_time"])
+    now_utc = datetime.now(timezone.utc)
+    notify_time_utc = event_time_utc - timedelta(hours=notify)
+
+    if notify_time_utc < now_utc:
+        print(f"notify_time: {notify_time_utc}, now: {now_utc}, event_time: {event_time_utc}")
+        await message.answer(
+            "❌ Připomenutí nelze nastavit do minulosti."
+        )
+        await manager.start(EventsSg.time)
+        return
+
     name = manager.dialog_data["event_name"]
     timestamp_str = data.get("event_time")
     if isinstance(timestamp_str, datetime):
@@ -138,7 +150,7 @@ async def notify_success(c, w, manager: DialogManager, result: int):
     state = manager.middleware_data["state"]
     data = await state.get_data()
 
-    event_time_utc = parse_event_time_utc(data["event_time"])
+    """event_time_utc = parse_event_time_utc(data["event_time"])
     now_utc = datetime.now(timezone.utc)
     notify_time_utc = event_time_utc - timedelta(hours=result)
 
@@ -148,7 +160,7 @@ async def notify_success(c, w, manager: DialogManager, result: int):
             "❌ Připomenutí nelze nastavit do minulosti.\n"
             "Zadejte menší počet hodin."
         )
-        return
+        return"""
 
     await state.update_data(notify_time=result)
     await manager.next()

@@ -120,12 +120,12 @@ async def create_new_event(sg_id: int, name: str, timestamp: datetime, comment: 
     return event
 
 async def get_events(subgroup_id: int):
+    prague_tz = ZoneInfo("Europe/Prague")
     async with AsyncSessionLocal() as session:
         result = await session.execute(
             select(Event).where(Event.sg_id == subgroup_id)
         )
         events = result.scalars().all()
-        tz = timezone(timedelta(hours=2))
 
         processed = []
         for e in events:
@@ -133,9 +133,9 @@ async def get_events(subgroup_id: int):
             if isinstance(ts, str):
                 ts = datetime.fromisoformat(ts)
             if ts.tzinfo is None:
-                ts = ts.replace(tzinfo=timezone.utc)
+                ts = ts.replace(tzinfo=prague_tz)
 
-            ts = ts.astimezone(tz)
+            ts = ts.astimezone(prague_tz)
             processed.append({
                 "id": e.id,
                 "name": e.name,
